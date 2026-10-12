@@ -1,0 +1,86 @@
+[build-system]
+requires = ["setuptools>=72.0", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "edgeweather"
+version = "0.1.0"
+description = "Rapid image-based weather condition classification via transfer learning on optimised CNN and ViT architectures."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Your Name", email = "your.email@example.com" }]
+keywords = [
+    "weather classification",
+    "transfer learning",
+    "MobileNetV3",
+    "ResNet",
+    "ViT",
+    "computer vision",
+    "edge inference",
+    "explainable AI",
+    "Grad-CAM",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[project.urls]
+Homepage = "https://github.com/junaiddbz/edgeweather-condition-classification"
+Repository = "https://github.com/junaiddbz/edgeweather-condition-classification"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+# ── Ruff: Linting & Formatting ──────────────────────────────
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+indent-width = 4
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "SIM", # flake8-simplify
+]
+ignore = [
+    "E501",  # Line too long (handled by formatter)
+    "B008",  # Function calls in default arguments
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+
+# ── Pytest ──────────────────────────────────────────────────
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short --cov=src --cov-report=term-missing"
+filterwarnings = ["ignore::DeprecationWarning", "ignore::UserWarning"]
+
+# ── Coverage ────────────────────────────────────────────────
+[tool.coverage.run]
+source = ["src"]
+omit = ["tests/*", "app/*", "notebooks/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false

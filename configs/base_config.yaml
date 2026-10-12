@@ -1,0 +1,84 @@
+# ============================================================
+# base_config.yaml  —  Shared project-wide configuration
+# All other configs inherit / override these defaults.
+# ============================================================
+
+project:
+  name: "EdgeWeather"
+  seed: 42
+  version: "0.1.0"
+
+paths:
+  data_root: "data"
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+  corrupted_dir: "data/corrupted"
+  domain_b_dir: "data/domain_b"
+  outputs_dir: "outputs"
+  checkpoints_dir: "outputs/checkpoints"
+  onnx_dir: "outputs/onnx"
+  figures_dir: "outputs/figures"
+  results_dir: "outputs/results"
+
+dataset:
+  classes:
+    - "dew"
+    - "fog"
+    - "frost"
+    - "glaze"
+    - "hail"
+    - "lightning"
+    - "rain"
+    - "rainbow"
+    - "rime"
+    - "sandstorm"
+    - "snow"
+  num_classes: 11
+  image_size: 224           # Input resolution (224×224)
+  train_split: 0.70
+  val_split: 0.15
+  test_split: 0.15
+  dedup_hamming_threshold: 4  # Max Hamming distance for near-duplicate detection
+
+dataloader:
+  batch_size: 32
+  num_workers: 4
+  pin_memory: true
+  persistent_workers: true
+  prefetch_factor: 2
+
+augmentation:
+  # ImageNet normalization statistics
+  mean: [0.485, 0.456, 0.406]
+  std: [0.229, 0.224, 0.225]
+  # Training augmentation strengths
+  random_resized_crop_scale: [0.8, 1.0]
+  color_jitter:
+    brightness: 0.2
+    contrast: 0.2
+    saturation: 0.2
+    hue: 0.1
+    p: 0.5
+  horizontal_flip_p: 0.5
+  blur_p: 0.3
+  shift_scale_rotate_p: 0.5
+
+training:
+  max_epochs: 50
+  early_stopping_patience: 7
+  grad_clip_max_norm: 1.0
+  use_amp: true             # Automatic Mixed Precision
+  monitor_metric: "val_macro_f1"
+  monitor_mode: "max"
+  log_every_n_steps: 10
+
+loss:
+  label_smoothing: 0.1
+  confusion_aware:
+    enabled: true           # Toggle Confusion-Aware Loss
+    lambda_weight: 0.3      # λ weight for confusion penalty term
+    warmup_epochs: 5        # Epochs of CE-only before C matrix is estimated
+
+evaluation:
+  ece_n_bins: 15            # Number of bins for Expected Calibration Error
+  top_k_errors: 10          # Number of worst errors to extract per class

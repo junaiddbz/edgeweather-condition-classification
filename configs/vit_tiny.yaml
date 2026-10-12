@@ -1,0 +1,59 @@
+# ============================================================
+# vit_tiny.yaml  —  ViT-Tiny/16 (timm) hyperparameters
+# Inherits all defaults from base_config.yaml
+# ============================================================
+
+model:
+  name: "vit_tiny_patch16_224"
+  pretrained: true
+  pretrained_source: "timm"             # Loaded via timm.create_model
+  # ViT-specific settings
+  patch_size: 16                        # 224/16 = 14×14 = 196 patches
+  num_heads: 3                          # Attention heads per block
+  num_blocks: 12                        # Total transformer blocks
+  embed_dim: 192                        # CLS token dimensionality
+  # XAI: Attention Rollout (no Grad-CAM target layer needed)
+  xai_method: "attention_rollout"
+  attention_rollout:
+    head_fusion: "mean"                 # How to fuse multi-head attentions
+    discard_ratio: 0.9                  # Drop lowest 90% attention weights
+  # Feature extraction layer for t-SNE / UMAP
+  embedding_layer: "cls_token"          # 192-d [CLS] token from final block
+
+transfer_learning:
+  stage1:
+    description: "Linear probe — all transformer blocks frozen, head trained only"
+    epochs: 5
+    optimizer: "adamw"
+    lr: 1.0e-3
+    weight_decay: 1.0e-2               # ViT benefits from higher weight decay
+    freeze_backbone: true
+
+  stage2:
+    description: "Fine-tuning — top 4 transformer blocks unfrozen"
+    epochs: 45
+    optimizer: "adamw"
+    backbone_lr: 5.0e-6               # ViT is more sensitive — lower backbone LR
+    head_lr: 1.0e-4
+    weight_decay: 1.0e-2
+    # Unfreeze the last N transformer blocks (blocks[8:] out of 12)
+    unfreeze_from_block: 8
+    scheduler:
+      type: "cosine_annealing_warm_restarts"
+      T_0: 10
+      T_mult: 2
+      eta_min: 1.0e-8
+
+dataloader:
+  batch_size: 32
+
+benchmark:
+  warmup_iterations: 50
+  measure_iterations: 300
+  input_shape: [1, 3, 224, 224]
+
+export:
+  onnx_opset: 17
+  dynamic_axes:
+    input: {0: "batch_size"}
+    output: {0: "batch_size"}

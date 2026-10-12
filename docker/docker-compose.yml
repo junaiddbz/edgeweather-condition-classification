@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  edgeweather:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: edgeweather:latest
+    container_name: edgeweather-app
+    ports:
+      - "8501:8501"
+    volumes:
+      # Mount ONNX models (read-only); avoids embedding large binaries in the image
+      - ../outputs/onnx:/app/outputs/onnx:ro
+      # Mount processed split CSVs (read-only)
+      - ../data/processed:/app/data/processed:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s

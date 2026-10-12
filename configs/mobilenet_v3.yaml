@@ -1,0 +1,52 @@
+# ============================================================
+# mobilenet_v3.yaml  —  MobileNetV3-Large hyperparameters
+# Inherits all defaults from base_config.yaml
+# ============================================================
+
+model:
+  name: "mobilenet_v3_large"
+  pretrained: true
+  pretrained_source: "IMAGENET1K_V2"
+  # XAI target layer for Grad-CAM
+  gradcam_target_layer: "features.16"   # Last Conv2dNormActivation block
+  # Feature extraction layer for t-SNE / UMAP
+  embedding_layer: "classifier.0"       # 1280-d adaptive avg pool output
+
+transfer_learning:
+  stage1:
+    description: "Linear probe — backbone frozen, head trained only"
+    epochs: 5
+    optimizer: "adamw"
+    lr: 1.0e-3
+    weight_decay: 1.0e-4
+    freeze_backbone: true
+
+  stage2:
+    description: "Fine-tuning — top blocks unfrozen with differential LR"
+    epochs: 45
+    optimizer: "adamw"
+    # Differential learning rates
+    backbone_lr: 1.0e-5
+    head_lr: 1.0e-4
+    weight_decay: 1.0e-4
+    # Unfreeze the last N inverted bottleneck blocks
+    unfreeze_from_block: 14             # features[14:] unfrozen (of 17 total)
+    scheduler:
+      type: "cosine_annealing_warm_restarts"
+      T_0: 10                           # First restart cycle length (epochs)
+      T_mult: 2                         # Cycle length multiplier
+      eta_min: 1.0e-7
+
+dataloader:
+  batch_size: 64                        # MobileNet is lightweight — larger batch OK
+
+benchmark:
+  warmup_iterations: 50
+  measure_iterations: 500
+  input_shape: [1, 3, 224, 224]
+
+export:
+  onnx_opset: 17
+  dynamic_axes:
+    input: {0: "batch_size"}
+    output: {0: "batch_size"}

@@ -1,0 +1,114 @@
+# ============================================================
+# EdgeWeather: Git Ignore Configuration
+# ============================================================
+
+# --- Python Bytecode & Artifacts ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# --- Virtual Environments & Secrets ---
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# --- Jupyter Notebook Artifacts ---
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+
+# --- Dataset & Raw Imagery ---
+# Track directory placeholders and split manifests; ignore raw high-volume images
+data/raw/*
+!data/raw/.gitkeep
+data/corrupted/
+data/domain_b/
+data/synthetic_dryrun/
+data/processed/*
+!data/processed/.gitkeep
+!data/processed/*.csv
+
+# --- Model Checkpoints & ONNX Weights ---
+# Heavy binary weights should be tracked via Git LFS, DVC, or releases
+outputs/checkpoints/*.pt
+outputs/checkpoints/*.pth
+outputs/checkpoints/*.bin
+!outputs/checkpoints/.gitkeep
+outputs/onnx/*.onnx
+!outputs/onnx/.gitkeep
+
+# --- Experiment Results & Figures ---
+# Preserve directory structure; benchmark summaries & key figures are tracked
+!outputs/results/.gitkeep
+!outputs/results/*.csv
+!outputs/results/*.json
+!outputs/figures/.gitkeep
+!outputs/figures/*.png
+
+# --- Streamlit ---
+# Track theme configuration; ignore local runtime caches and secrets
+.streamlit/*
+!.streamlit/config.toml
+
+# --- Testing, Coverage & Linters ---
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+.ruff_cache/
+.mypy_cache/
+
+# --- IDEs & Operating System Artifacts ---
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# --- Logs & Experiment Trackers ---
+*.log
+*.tmp
+*.bak
+wandb/
+mlruns/
+.dvc/cache/
+
+scratch/
+
+# --- Project-Specific Working Files ---
+# Internal planning and temporary audit scripts (not for public repo)
+plan.md
+*_audit.py

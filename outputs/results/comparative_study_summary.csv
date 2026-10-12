@@ -1,0 +1,4 @@
+Architecture,Paradigm,Params (M),Latency p50 (ms),Throughput (FPS),Test Accuracy (%),Macro F1,ECE
+MobileNetV3-Large,Edge CNN,4.2,14.08,66.7,86.37,0.8661,0.061
+ResNet-50,Deep Residual CNN,23.5,48.24,20.3,87.72,0.8847,0.093
+ViT-Tiny,Vision Transformer,5.5,14.47,68.9,83.25,0.8405,0.0636

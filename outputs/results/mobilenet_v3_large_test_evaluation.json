@@ -1,0 +1,174 @@
+{
+  "model_name": "mobilenet_v3_large",
+  "split": "test",
+  "checkpoint": "outputs\\checkpoints\\mobilenet_v3_large_best.pt",
+  "accuracy": 0.8636836628511967,
+  "macro_f1": 0.8660853893065792,
+  "weighted_f1": 0.8621991876044618,
+  "macro_precision": 0.8676335156029698,
+  "macro_recall": 0.8668801342359939,
+  "ece": 0.0609935540686537,
+  "classification_report": {
+    "dew": {
+      "precision": 0.9574468085106383,
+      "recall": 0.9090909090909091,
+      "f1-score": 0.9326424870466321,
+      "support": 99.0
+    },
+    "fog": {
+      "precision": 0.8760330578512396,
+      "recall": 0.8907563025210085,
+      "f1-score": 0.8833333333333333,
+      "support": 119.0
+    },
+    "frost": {
+      "precision": 0.7681159420289855,
+      "recall": 0.803030303030303,
+      "f1-score": 0.7851851851851852,
+      "support": 66.0
+    },
+    "glaze": {
+      "precision": 0.7692307692307693,
+      "recall": 0.6410256410256411,
+      "f1-score": 0.6993006993006993,
+      "support": 78.0
+    },
+    "hail": {
+      "precision": 0.9176470588235294,
+      "recall": 0.9873417721518988,
+      "f1-score": 0.9512195121951219,
+      "support": 79.0
+    },
+    "lightning": {
+      "precision": 0.9285714285714286,
+      "recall": 0.9811320754716981,
+      "f1-score": 0.9541284403669725,
+      "support": 53.0
+    },
+    "rain": {
+      "precision": 0.8414634146341463,
+      "recall": 0.8961038961038961,
+      "f1-score": 0.8679245283018868,
+      "support": 77.0
+    },
+    "rainbow": {
+      "precision": 0.9393939393939394,
+      "recall": 0.9393939393939394,
+      "f1-score": 0.9393939393939394,
+      "support": 33.0
+    },
+    "rime": {
+      "precision": 0.8333333333333334,
+      "recall": 0.8928571428571429,
+      "f1-score": 0.8620689655172413,
+      "support": 168.0
+    },
+    "sandstorm": {
+      "precision": 0.8913043478260869,
+      "recall": 0.8282828282828283,
+      "f1-score": 0.8586387434554974,
+      "support": 99.0
+    },
+    "snow": {
+      "precision": 0.8214285714285714,
+      "recall": 0.7666666666666667,
+      "f1-score": 0.7931034482758621,
+      "support": 90.0
+    },
+    "accuracy": 0.8636836628511967,
+    "macro avg": {
+      "precision": 0.8676335156029698,
+      "recall": 0.8668801342359939,
+      "f1-score": 0.8660853893065792,
+      "support": 961.0
+    },
+    "weighted avg": {
+      "precision": 0.863058905569502,
+      "recall": 0.8636836628511967,
+      "f1-score": 0.8621991876044618,
+      "support": 961.0
+    }
+  },
+  "top_failures": [
+    {
+      "index": 566,
+      "filepath": "data\\raw\\fog\\trn_00231.jpg",
+      "true_label": "fog",
+      "pred_label": "rime",
+      "confidence": 0.9790763854980469,
+      "true_prob": 0.0024586983490735292
+    },
+    {
+      "index": 447,
+      "filepath": "data\\raw\\snow\\trn_04915.jpg",
+      "true_label": "snow",
+      "pred_label": "rain",
+      "confidence": 0.9777732491493225,
+      "true_prob": 0.013111474923789501
+    },
+    {
+      "index": 97,
+      "filepath": "data\\raw\\sandstorm\\trn_03278.jpg",
+      "true_label": "sandstorm",
+      "pred_label": "fog",
+      "confidence": 0.9699854850769043,
+      "true_prob": 0.013823411427438259
+    },
+    {
+      "index": 248,
+      "filepath": "data\\raw\\dew\\trn_00536.jpg",
+      "true_label": "dew",
+      "pred_label": "frost",
+      "confidence": 0.9688155055046082,
+      "true_prob": 0.0022346959449350834
+    },
+    {
+      "index": 290,
+      "filepath": "data\\raw\\rain\\trn_00125.jpg",
+      "true_label": "rain",
+      "pred_label": "fog",
+      "confidence": 0.9202917814254761,
+      "true_prob": 0.025212422013282776
+    },
+    {
+      "index": 302,
+      "filepath": "data\\raw\\rime\\trn_03675.jpg",
+      "true_label": "rime",
+      "pred_label": "frost",
+      "confidence": 0.8966257572174072,
+      "true_prob": 0.021086616441607475
+    },
+    {
+      "index": 734,
+      "filepath": "data\\raw\\sandstorm\\trn_05079.jpg",
+      "true_label": "sandstorm",
+      "pred_label": "fog",
+      "confidence": 0.894695520401001,
+      "true_prob": 0.09206072986125946
+    },
+    {
+      "index": 587,
+      "filepath": "data\\raw\\rime\\val_00087.jpg",
+      "true_label": "rime",
+      "pred_label": "glaze",
+      "confidence": 0.8905363082885742,
+      "true_prob": 0.03258918970823288
+    },
+    {
+      "index": 959,
+      "filepath": "data\\raw\\frost\\trn_05385.jpg",
+      "true_label": "frost",
+      "pred_label": "rime",
+      "confidence": 0.8784699440002441,
+      "true_prob": 0.07275558263063431
+    },
+    {
+      "index": 223,
+      "filepath": "data\\raw\\glaze\\val_01199.jpg",
+      "true_label": "glaze",
+      "pred_label": "rime",
+      "confidence": 0.8781965374946594,
+      "true_prob": 0.08638177812099457
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+model,engine,size_mb,mean_ms,std_ms,p50_ms,p95_ms,p99_ms,fps
+mobilenet_v3_large,PyTorch FP32 (CPU),16.08,12.87,1.41,12.48,15.89,17.04,77.7
+mobilenet_v3_large,PyTorch CUDA (GPU),16.08,8.45,1.76,8.14,11.81,14.36,118.3
+mobilenet_v3_large,ONNX Runtime FP32,16.07,3.17,0.6,3.07,4.03,5.72,315.1
+mobilenet_v3_large,ONNX Runtime INT8,12.53,2.98,0.53,2.88,3.51,5.3,335.8
+resnet50,PyTorch FP32 (CPU),89.76,42.07,1.65,42.08,44.39,46.26,23.8
+resnet50,PyTorch CUDA (GPU),89.76,11.51,0.71,11.17,13.0,14.28,86.9
+resnet50,ONNX Runtime FP32,89.69,22.43,1.35,21.99,24.07,26.75,44.6
+resnet50,ONNX Runtime INT8,89.64,21.89,1.35,21.53,23.59,25.03,45.7
+vit_tiny_patch16_224,PyTorch FP32 (CPU),21.08,13.41,1.05,13.37,14.79,17.5,74.6
+vit_tiny_patch16_224,PyTorch CUDA (GPU),21.08,5.46,0.39,5.31,6.34,6.6,183.0
+vit_tiny_patch16_224,ONNX Runtime FP32,21.24,10.96,1.25,10.58,13.6,14.73,91.3
+vit_tiny_patch16_224,ONNX Runtime INT8,6.17,7.24,1.16,7.27,9.32,11.69,138.0
