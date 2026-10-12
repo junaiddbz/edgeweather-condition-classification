@@ -78,17 +78,32 @@ def export_to_onnx(
         "Exporting PyTorch model to ONNX graph: %s (opset=%d)...", out_file.name, opset_version
     )
 
-    torch.onnx.export(
-        model,
-        dummy_input,
-        str(out_file),
-        export_params=True,
-        opset_version=opset_version,
-        do_constant_folding=True,
-        input_names=input_names,
-        output_names=output_names,
-        dynamic_axes=dynamic_axes,
-    )
+    export_kwargs: dict[str, Any] = {
+        "export_params": True,
+        "opset_version": opset_version,
+        "do_constant_folding": True,
+        "input_names": input_names,
+        "output_names": output_names,
+        "dynamic_axes": dynamic_axes,
+    }
+
+    # In PyTorch >= 2.1, passing dynamo=False explicitly selects the robust TorchScript
+    # exporter, avoiding experimental Dynamo version conversions and shape inference discrepancies.
+    try:
+        torch.onnx.export(
+            model,
+            dummy_input,
+            str(out_file),
+            dynamo=False,
+            **export_kwargs,
+        )
+    except TypeError:
+        torch.onnx.export(
+            model,
+            dummy_input,
+            str(out_file),
+            **export_kwargs,
+        )
 
     # Validate exported graph structure
     onnx_model = onnx.load(str(out_file))
