@@ -458,7 +458,7 @@ def preprocess_image_for_model(
 ) -> tuple[np.ndarray, torch.Tensor]:
     """Convert PIL image to preprocessed RGB array and normalized PyTorch tensor."""
     rgb_img = np.array(img.convert("RGB"))
-    size_int = target_size[0] if isinstance(target_size, (tuple, list)) else int(target_size)
+    size_int = target_size[0] if isinstance(target_size, tuple | list) else int(target_size)
     transform = get_eval_transforms(image_size=size_int)
     augmented = transform(image=rgb_img)
     tensor = augmented["image"].unsqueeze(0)  # Shape: (1, 3, H, W)

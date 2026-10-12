@@ -385,7 +385,7 @@ def generate_comparative_xai_grid(
     Returns:
         Tuple of (Figure, explanation_metadata_dict).
     """
-    if isinstance(image_input, (str, Path)):
+    if isinstance(image_input, str | Path):
         pil_img = Image.open(image_input).convert("RGB")
     elif isinstance(image_input, np.ndarray):
         pil_img = Image.fromarray(image_input)
