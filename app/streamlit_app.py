@@ -521,17 +521,31 @@ def run_pytorch(
 
 
 def get_preloaded_sample_paths() -> dict[str, Path]:
-    """Scan available real dataset or synthetic sample images."""
+    """Scan available curated sample images in app/sample_images or raw dataset."""
     samples = {}
-    raw_dir = Path("data/raw")
-    if raw_dir.exists():
-        for cls in DEFAULT_CLASSES:
-            cls_folder = raw_dir / cls
-            if cls_folder.exists():
-                matches = sorted(cls_folder.glob("*.jpg"))
-                if matches:
-                    samples[cls] = matches[0]
 
+    # 1. Curated app sample directory (bundled with deployed app)
+    app_sample_dir = Path(__file__).resolve().parent / "sample_images"
+    if app_sample_dir.exists():
+        for cls in DEFAULT_CLASSES:
+            for ext in ("jpg", "jpeg", "png", "webp"):
+                candidate = app_sample_dir / f"{cls}.{ext}"
+                if candidate.exists():
+                    samples[cls] = candidate
+                    break
+
+    # 2. Fallback to local data/raw directory if present
+    if not samples:
+        raw_dir = Path("data/raw")
+        if raw_dir.exists():
+            for cls in DEFAULT_CLASSES:
+                cls_folder = raw_dir / cls
+                if cls_folder.exists():
+                    matches = sorted(cls_folder.glob("*.jpg"))
+                    if matches:
+                        samples[cls] = matches[0]
+
+    # 3. Fallback to synthetic dryrun images
     if not samples:
         sample_dir = Path("data/synthetic_dryrun/images")
         if sample_dir.exists():
