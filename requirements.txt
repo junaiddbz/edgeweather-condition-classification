@@ -1,61 +1,43 @@
 # ============================================================
-# EdgeWeather — Pinned Dependency File
-# Python 3.10 | Last updated: 2026-10-12
+# EdgeWeather — Core & Deployment Dependencies
+# Compatible with Python 3.10+ (Local, CI & Streamlit Cloud)
 # ============================================================
 
-# ── Core Deep Learning ──────────────────────────────────────
-torch==2.7.1
-torchvision==0.22.1
-torchaudio==2.7.1
+# ── Deep Learning & Model Zoo ───────────────────────────────
+torch>=2.0.0
+torchvision>=0.15.0
+timm>=0.9.0
 
-# ── Vision Transformer (timm model zoo) ─────────────────────
-timm==1.0.9
+# ── Computer Vision & Augmentation ──────────────────────────
+albumentations>=1.4.0
+opencv-python-headless>=4.8.0
+Pillow>=10.0.0
 
-# ── Data Augmentation ───────────────────────────────────────
-albumentations==1.4.23
-opencv-python-headless==4.10.0.84
+# ── Data Processing & Numerical ─────────────────────────────
+numpy>=1.24.0
+pandas>=2.0.0
+scipy>=1.11.0
+scikit-learn>=1.3.0
+imagehash>=4.3.0
 
-# ── Data Handling ───────────────────────────────────────────
-numpy==1.26.4
-pandas==2.2.3
-Pillow==10.4.0
-imagehash==4.3.1          # Perceptual hash deduplication
-scikit-learn==1.5.2        # Stratified splits, metrics
-scipy==1.14.1
-
-# ── ONNX & Edge Optimization ────────────────────────────────
-onnx==1.17.0
-onnxruntime==1.20.1
+# ── ONNX & Edge Runtime ─────────────────────────────────────
+onnx>=1.14.0
+onnxruntime>=1.16.0
 onnxscript>=0.1.0
 
-# ── Explainability & Feature Visualization ──────────────────
-grad-cam==1.5.4            # Grad-CAM & Grad-CAM++
-umap-learn==0.5.7          # UMAP manifold projections
-scikit-image==0.24.0       # Corruption utilities
+# ── Logging, Metrics & Utilities ────────────────────────────
+PyYAML>=6.0
+tqdm>=4.65.0
+rich>=13.0.0
+torchmetrics>=1.0.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
 
-# ── Experiment Tracking & Configuration ─────────────────────
-PyYAML==6.0.2
-tqdm==4.67.1
-rich==13.9.4               # Beautiful terminal output
-
-# ── Evaluation & Metrics ────────────────────────────────────
-matplotlib==3.9.4
-seaborn==0.13.2
-torchmetrics==1.6.1        # ECE, F1, Macro metrics
-
-# ── Domain Shift (FID) ──────────────────────────────────────
-pytorch-fid==0.3.0         # Fréchet Inception Distance
-
-# ── Web Dashboard ───────────────────────────────────────────
-streamlit==1.40.2
+# ── Streamlit Web Application ───────────────────────────────
+streamlit>=1.30.0
 altair>=5.0.0
-plotly==5.24.1
 
-# ── Testing & Code Quality ──────────────────────────────────
-pytest==8.3.4
-pytest-cov==6.0.0
-ruff==0.8.4                # Fast Python linter + formatter
-
-# ── Notebook Support ────────────────────────────────────────
-jupyterlab==4.3.4
-ipywidgets==8.1.5
+# ── Testing & Quality ───────────────────────────────────────
+pytest>=7.4.0
+pytest-cov>=4.1.0
+ruff>=0.8.0
