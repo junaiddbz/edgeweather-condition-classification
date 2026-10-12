@@ -28,7 +28,11 @@ def train_setup():
         )
         config = {
             "project": {"seed": 42},
-            "dataset": {"classes": DEFAULT_CLASSES, "num_classes": len(DEFAULT_CLASSES), "image_size": 224},
+            "dataset": {
+                "classes": DEFAULT_CLASSES,
+                "num_classes": len(DEFAULT_CLASSES),
+                "image_size": 224,
+            },
             "dataloader": {"batch_size": 4, "num_workers": 0, "pin_memory": False},
             "augmentation": {},
             "paths": {
@@ -52,7 +56,12 @@ def train_setup():
                     "head_lr": 1e-4,
                     "weight_decay": 1e-4,
                     "unfreeze_from_block": 14,
-                    "scheduler": {"type": "cosine_annealing_warm_restarts", "T_0": 5, "T_mult": 1, "eta_min": 1e-7},
+                    "scheduler": {
+                        "type": "cosine_annealing_warm_restarts",
+                        "T_0": 5,
+                        "T_mult": 1,
+                        "eta_min": 1e-7,
+                    },
                 },
             },
         }

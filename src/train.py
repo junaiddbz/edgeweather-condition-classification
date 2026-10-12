@@ -88,7 +88,9 @@ class Trainer:
         self.model.to(self.device)
 
         paths_cfg = config.get("paths", {})
-        self.checkpoint_dir = Path(checkpoint_dir or paths_cfg.get("checkpoints_dir", "outputs/checkpoints"))
+        self.checkpoint_dir = Path(
+            checkpoint_dir or paths_cfg.get("checkpoints_dir", "outputs/checkpoints")
+        )
         self.results_dir = Path(results_dir or paths_cfg.get("results_dir", "outputs/results"))
         ensure_dir(self.checkpoint_dir)
         ensure_dir(self.results_dir)
@@ -97,7 +99,9 @@ class Trainer:
         self.loss_fn.to(self.device)
 
         # Mixed precision setup
-        self.use_amp = config.get("training", {}).get("use_amp", True) and (self.device.type == "cuda")
+        self.use_amp = config.get("training", {}).get("use_amp", True) and (
+            self.device.type == "cuda"
+        )
         self.scaler = torch.amp.GradScaler("cuda", enabled=self.use_amp)
 
         self.grad_clip = config.get("training", {}).get("grad_clip_max_norm", 1.0)
@@ -160,10 +164,12 @@ class Trainer:
             correct += (preds == targets).sum().item()
             total_samples += batch_size
 
-            pbar.set_postfix({
-                "loss": f"{loss.item():.4f}",
-                "acc": f"{(correct / total_samples):.3f}",
-            })
+            pbar.set_postfix(
+                {
+                    "loss": f"{loss.item():.4f}",
+                    "acc": f"{(correct / total_samples):.3f}",
+                }
+            )
 
         avg_loss = total_loss / max(1, total_samples)
         accuracy = correct / max(1, total_samples)
@@ -202,7 +208,9 @@ class Trainer:
             total_samples += batch_size
 
         avg_loss = total_loss / max(1, total_samples)
-        accuracy = (np.array(all_preds) == np.array(all_targets)).mean() if total_samples > 0 else 0.0
+        accuracy = (
+            (np.array(all_preds) == np.array(all_targets)).mean() if total_samples > 0 else 0.0
+        )
         macro_f1 = f1_score(all_targets, all_preds, average="macro", zero_division=0)
         cm = confusion_matrix(
             all_targets,
@@ -346,7 +354,9 @@ class Trainer:
         if isinstance(self.loss_fn, ConfusionAwareLoss):
             s1_final_eval = self.evaluate()
             cm = s1_final_eval["confusion_matrix"]
-            logger.info("Calibrating Confusion-Aware Loss with Stage 1 empirical validation errors...")
+            logger.info(
+                "Calibrating Confusion-Aware Loss with Stage 1 empirical validation errors..."
+            )
             self.loss_fn.update_from_empirical_confusion(cm, blend_factor=0.5)
 
         # ── STAGE 2: Fine-Tuning (Joint Optimization) ────────────────────────
@@ -453,6 +463,7 @@ class Trainer:
 
 # ── Training Pipeline Runner ─────────────────────────────────────────────────
 
+
 def train_model(
     model_name: str = "mobilenet_v3_large",
     base_config_path: str | Path = "configs/base_config.yaml",
@@ -530,22 +541,29 @@ def train_model(
 
 # ── CLI Interface ────────────────────────────────────────────────────────────
 
+
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="EdgeWeather: Two-Stage Transfer Learning Engine"
-    )
+    parser = argparse.ArgumentParser(description="EdgeWeather: Two-Stage Transfer Learning Engine")
     parser.add_argument(
         "--model",
         type=str,
         default="mobilenet_v3_large",
-        choices=["mobilenet_v3_large", "mobilenet_v3", "resnet50", "vit_tiny_patch16_224", "vit_tiny"],
+        choices=[
+            "mobilenet_v3_large",
+            "mobilenet_v3",
+            "resnet50",
+            "vit_tiny_patch16_224",
+            "vit_tiny",
+        ],
         help="Target architecture to train.",
     )
     parser.add_argument("--base_config", type=Path, default=Path("configs/base_config.yaml"))
     parser.add_argument("--model_config", type=Path, default=None)
     parser.add_argument("--stage1_epochs", type=int, default=None)
     parser.add_argument("--stage2_epochs", type=int, default=None)
-    parser.add_argument("--dry_run", action="store_true", help="Run rapid dry-run on synthetic dataset.")
+    parser.add_argument(
+        "--dry_run", action="store_true", help="Run rapid dry-run on synthetic dataset."
+    )
     args = parser.parse_args()
 
     train_model(

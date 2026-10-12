@@ -39,6 +39,7 @@ logger = get_logger(__name__)
 
 # ── PyTorch Engine Profiler ──────────────────────────────────────────────────
 
+
 def benchmark_pytorch(
     model: nn.Module,
     input_shape: tuple[int, ...] = (1, 3, 224, 224),
@@ -99,6 +100,7 @@ def benchmark_pytorch(
 
 # ── ONNX Runtime Profiler ────────────────────────────────────────────────────
 
+
 def benchmark_onnx(
     onnx_path: str | Path,
     input_shape: tuple[int, ...] = (1, 3, 224, 224),
@@ -158,6 +160,7 @@ def benchmark_onnx(
 
 # ── Latency Plotting ─────────────────────────────────────────────────────────
 
+
 def plot_latency_comparison(
     df_results: pd.DataFrame,
     save_path: str | Path | None = None,
@@ -179,9 +182,12 @@ def plot_latency_comparison(
     y_pos = np.arange(len(labels))
 
     colors = [
-        "#2b5c8f" if "INT8" in eng
-        else "#4a90e2" if "ONNX" in eng
-        else "#8b5cf6" if "CUDA" in eng or "GPU" in eng
+        "#2b5c8f"
+        if "INT8" in eng
+        else "#4a90e2"
+        if "ONNX" in eng
+        else "#8b5cf6"
+        if "CUDA" in eng or "GPU" in eng
         else "#10b981"
         for eng in df_results["engine"]
     ]
@@ -196,7 +202,14 @@ def plot_latency_comparison(
     ax1.grid(True, linestyle=":", alpha=0.6)
 
     for bar, val in zip(bars1, df_results["p50_ms"], strict=False):
-        ax1.text(val + max(df_results["p50_ms"]) * 0.02, bar.get_y() + bar.get_height() / 2, f"{val:.1f} ms", va="center", fontsize=10, fontweight="bold")
+        ax1.text(
+            val + max(df_results["p50_ms"]) * 0.02,
+            bar.get_y() + bar.get_height() / 2,
+            f"{val:.1f} ms",
+            va="center",
+            fontsize=10,
+            fontweight="bold",
+        )
 
     # Panel 2: FPS Throughput (Higher is better)
     bars2 = ax2.barh(y_pos, df_results["fps"], color=colors, edgecolor="black", alpha=0.85)
@@ -208,7 +221,14 @@ def plot_latency_comparison(
     ax2.grid(True, linestyle=":", alpha=0.6)
 
     for bar, val in zip(bars2, df_results["fps"], strict=False):
-        ax2.text(val + max(df_results["fps"]) * 0.02, bar.get_y() + bar.get_height() / 2, f"{val:.0f} FPS", va="center", fontsize=10, fontweight="bold")
+        ax2.text(
+            val + max(df_results["fps"]) * 0.02,
+            bar.get_y() + bar.get_height() / 2,
+            f"{val:.0f} FPS",
+            va="center",
+            fontsize=10,
+            fontweight="bold",
+        )
 
     plt.tight_layout()
 
@@ -222,6 +242,7 @@ def plot_latency_comparison(
 
 
 # ── Comprehensive Benchmark Pipeline ─────────────────────────────────────────
+
 
 def run_benchmarks(
     onnx_dir: str | Path = "outputs/onnx",
@@ -270,28 +291,38 @@ def run_benchmarks(
         if data is not None and "model_state_dict" in data:
             model.load_state_dict(data["model_state_dict"])
 
-        pt_stats = benchmark_pytorch(model, warmup_iters=warmup, measure_iters=iterations, device="cpu")
+        pt_stats = benchmark_pytorch(
+            model, warmup_iters=warmup, measure_iters=iterations, device="cpu"
+        )
         pt_size_mb = model.count_parameters()["size_mb"]
-        records.append({
-            "model": model_name,
-            "engine": "PyTorch FP32 (CPU)",
-            "size_mb": pt_size_mb,
-            **pt_stats,
-        })
+        records.append(
+            {
+                "model": model_name,
+                "engine": "PyTorch FP32 (CPU)",
+                "size_mb": pt_size_mb,
+                **pt_stats,
+            }
+        )
 
         # 1b. PyTorch CUDA (GPU) if available
         if torch.cuda.is_available():
             try:
-                model_gpu = build_model(model_name, num_classes=n_classes, pretrained=False).to("cuda")
+                model_gpu = build_model(model_name, num_classes=n_classes, pretrained=False).to(
+                    "cuda"
+                )
                 if data is not None and "model_state_dict" in data:
                     model_gpu.load_state_dict(data["model_state_dict"])
-                cuda_stats = benchmark_pytorch(model_gpu, warmup_iters=warmup, measure_iters=iterations, device="cuda")
-                records.append({
-                    "model": model_name,
-                    "engine": "PyTorch CUDA (GPU)",
-                    "size_mb": pt_size_mb,
-                    **cuda_stats,
-                })
+                cuda_stats = benchmark_pytorch(
+                    model_gpu, warmup_iters=warmup, measure_iters=iterations, device="cuda"
+                )
+                records.append(
+                    {
+                        "model": model_name,
+                        "engine": "PyTorch CUDA (GPU)",
+                        "size_mb": pt_size_mb,
+                        **cuda_stats,
+                    }
+                )
                 del model_gpu
                 torch.cuda.empty_cache()
             except Exception as e:
@@ -302,24 +333,28 @@ def run_benchmarks(
         if onnx_fp32.exists():
             onnx_stats = benchmark_onnx(onnx_fp32, warmup_iters=warmup, measure_iters=iterations)
             onnx_size_mb = round(onnx_fp32.stat().st_size / (1024 * 1024), 2)
-            records.append({
-                "model": model_name,
-                "engine": "ONNX Runtime FP32",
-                "size_mb": onnx_size_mb,
-                **onnx_stats,
-            })
+            records.append(
+                {
+                    "model": model_name,
+                    "engine": "ONNX Runtime FP32",
+                    "size_mb": onnx_size_mb,
+                    **onnx_stats,
+                }
+            )
 
         # 3. ONNX INT8 Quantized
         onnx_int8 = onnx_p / f"{model_name}_fp32_int8.onnx"
         if onnx_int8.exists():
             int8_stats = benchmark_onnx(onnx_int8, warmup_iters=warmup, measure_iters=iterations)
             int8_size_mb = round(onnx_int8.stat().st_size / (1024 * 1024), 2)
-            records.append({
-                "model": model_name,
-                "engine": "ONNX Runtime INT8",
-                "size_mb": int8_size_mb,
-                **int8_stats,
-            })
+            records.append(
+                {
+                    "model": model_name,
+                    "engine": "ONNX Runtime INT8",
+                    "size_mb": int8_size_mb,
+                    **int8_stats,
+                }
+            )
 
     df = pd.DataFrame(records)
 

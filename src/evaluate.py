@@ -47,6 +47,7 @@ logger = get_logger(__name__)
 
 # ── Expected Calibration Error (ECE) ─────────────────────────────────────────
 
+
 def compute_ece(
     probabilities: np.ndarray,
     targets: np.ndarray,
@@ -83,7 +84,11 @@ def compute_ece(
 
     for i in range(n_bins):
         low, high = bin_edges[i], bin_edges[i + 1]
-        in_bin = (confidences > low) & (confidences <= high) if i > 0 else (confidences >= low) & (confidences <= high)
+        in_bin = (
+            (confidences > low) & (confidences <= high)
+            if i > 0
+            else (confidences >= low) & (confidences <= high)
+        )
         count = np.sum(in_bin)
         bin_counts[i] = count
 
@@ -104,6 +109,7 @@ def compute_ece(
 
 
 # ── Plotting Utilities ───────────────────────────────────────────────────────
+
 
 def plot_reliability_diagram(
     bin_stats: dict[str, np.ndarray],
@@ -165,7 +171,9 @@ def plot_reliability_diagram(
     ax.set_ylim(0, 1)
     ax.set_xlabel("Confidence", fontsize=12)
     ax.set_ylabel("Accuracy", fontsize=12)
-    ax.set_title(f"Reliability Diagram: {model_name} (ECE = {ece:.4f})", fontsize=13, fontweight="bold")
+    ax.set_title(
+        f"Reliability Diagram: {model_name} (ECE = {ece:.4f})", fontsize=13, fontweight="bold"
+    )
     ax.legend(loc="upper left")
     ax.grid(True, linestyle=":", alpha=0.6)
 
@@ -197,7 +205,9 @@ def plot_confusion_matrix(
     """
     if normalize:
         row_sums = cm.sum(axis=1, keepdims=True)
-        cm_display = np.divide(cm.astype(float), row_sums, out=np.zeros_like(cm, dtype=float), where=row_sums != 0)
+        cm_display = np.divide(
+            cm.astype(float), row_sums, out=np.zeros_like(cm, dtype=float), where=row_sums != 0
+        )
         fmt = ".2%"
     else:
         cm_display = cm
@@ -228,6 +238,7 @@ def plot_confusion_matrix(
 
 # ── Error Analysis ───────────────────────────────────────────────────────────
 
+
 def extract_top_failure_cases(
     probabilities: np.ndarray,
     targets: np.ndarray,
@@ -255,14 +266,16 @@ def extract_top_failure_cases(
     errors: list[dict[str, Any]] = []
     for idx, (p, t, c, path) in enumerate(zip(preds, targets, confs, filepaths, strict=False)):
         if p != t:
-            errors.append({
-                "index": idx,
-                "filepath": str(path),
-                "true_label": class_names[t],
-                "pred_label": class_names[p],
-                "confidence": float(c),
-                "true_prob": float(probabilities[idx, t]),
-            })
+            errors.append(
+                {
+                    "index": idx,
+                    "filepath": str(path),
+                    "true_label": class_names[t],
+                    "pred_label": class_names[p],
+                    "confidence": float(c),
+                    "true_prob": float(probabilities[idx, t]),
+                }
+            )
 
     # Sort descending by confidence (most overconfident mistakes first)
     errors.sort(key=lambda x: x["confidence"], reverse=True)
@@ -270,6 +283,7 @@ def extract_top_failure_cases(
 
 
 # ── Full Model Evaluator ─────────────────────────────────────────────────────
+
 
 @torch.no_grad()
 def evaluate_model(
@@ -376,6 +390,7 @@ def evaluate_model(
 
 # ── Pipeline Runner & CLI ────────────────────────────────────────────────────
 
+
 def run_evaluation_pipeline(
     checkpoint_path: str | Path,
     config_path: str | Path = "configs/base_config.yaml",
@@ -470,7 +485,9 @@ def run_evaluation_pipeline(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="EdgeWeather: Scientific Evaluation Suite")
-    parser.add_argument("--checkpoint", type=Path, required=True, help="Path to .pt model checkpoint.")
+    parser.add_argument(
+        "--checkpoint", type=Path, required=True, help="Path to .pt model checkpoint."
+    )
     parser.add_argument("--base_config", type=Path, default=Path("configs/base_config.yaml"))
     parser.add_argument("--model_config", type=Path, default=None)
     parser.add_argument("--split", type=str, default="test", choices=["test", "val", "train"])

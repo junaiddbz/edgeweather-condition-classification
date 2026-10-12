@@ -234,10 +234,14 @@ class ConfusionAwareLoss(nn.Module):
         updated = (1.0 - blend_factor) * self.cost_matrix + blend_factor * empirical_costs
         updated.fill_diagonal_(0.0)
         self.cost_matrix.copy_(updated)
-        logger.info("Updated confusion cost matrix with empirical validation counts (blend=%.2f).", blend_factor)
+        logger.info(
+            "Updated confusion cost matrix with empirical validation counts (blend=%.2f).",
+            blend_factor,
+        )
 
 
 # ── Loss Factory ─────────────────────────────────────────────────────────────
+
 
 def build_loss_fn(
     config: dict[str, Any],

@@ -67,18 +67,22 @@ def test_plot_reliability_diagram():
 
 def test_plot_confusion_matrix():
     """Verify confusion matrix heatmap figure generation and persistence."""
-    cm = np.array([
-        [10, 2, 0, 0, 1, 0],
-        [1, 12, 0, 0, 0, 0],
-        [0, 0, 15, 1, 0, 0],
-        [0, 1, 0, 14, 0, 0],
-        [2, 0, 0, 0, 11, 1],
-        [0, 0, 0, 0, 2, 13],
-    ])
+    cm = np.array(
+        [
+            [10, 2, 0, 0, 1, 0],
+            [1, 12, 0, 0, 0, 0],
+            [0, 0, 15, 1, 0, 0],
+            [0, 1, 0, 14, 0, 0],
+            [2, 0, 0, 0, 11, 1],
+            [0, 0, 0, 0, 2, 13],
+        ]
+    )
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         save_path = Path(tmp_dir) / "cm.png"
-        fig = plot_confusion_matrix(cm, class_names=DEFAULT_CLASSES, normalize=True, save_path=save_path)
+        fig = plot_confusion_matrix(
+            cm, class_names=DEFAULT_CLASSES, normalize=True, save_path=save_path
+        )
 
         assert isinstance(fig, plt.Figure)
         assert save_path.exists()
@@ -88,11 +92,13 @@ def test_plot_confusion_matrix():
 
 def test_extract_top_failure_cases():
     """Verify extraction of worst-case misclassifications."""
-    probs = np.array([
-        [0.9, 0.1],  # Pred 0, True 0 -> Correct
-        [0.85, 0.15], # Pred 0, True 1 -> Error (conf 0.85)
-        [0.95, 0.05], # Pred 0, True 1 -> Error (conf 0.95)
-    ])
+    probs = np.array(
+        [
+            [0.9, 0.1],  # Pred 0, True 0 -> Correct
+            [0.85, 0.15],  # Pred 0, True 1 -> Error (conf 0.85)
+            [0.95, 0.05],  # Pred 0, True 1 -> Error (conf 0.95)
+        ]
+    )
     targets = np.array([0, 1, 1])
     paths = ["img0.jpg", "img1.jpg", "img2.jpg"]
 

@@ -35,6 +35,7 @@ logger = get_logger(__name__)
 
 # ── ONNX Graph Export ────────────────────────────────────────────────────────
 
+
 def export_to_onnx(
     model: nn.Module,
     output_path: str | Path,
@@ -73,7 +74,9 @@ def export_to_onnx(
             "output": {0: "batch_size"},
         }
 
-    logger.info("Exporting PyTorch model to ONNX graph: %s (opset=%d)...", out_file.name, opset_version)
+    logger.info(
+        "Exporting PyTorch model to ONNX graph: %s (opset=%d)...", out_file.name, opset_version
+    )
 
     torch.onnx.export(
         model,
@@ -97,6 +100,7 @@ def export_to_onnx(
 
 
 # ── Numerical Parity Verification ────────────────────────────────────────────
+
 
 def validate_onnx_parity(
     pytorch_model: nn.Module,
@@ -131,7 +135,9 @@ def validate_onnx_parity(
     # ONNX Runtime forward pass
     session_options = ort.SessionOptions()
     session_options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
-    session = ort.InferenceSession(str(onnx_path), session_options, providers=["CPUExecutionProvider"])
+    session = ort.InferenceSession(
+        str(onnx_path), session_options, providers=["CPUExecutionProvider"]
+    )
 
     input_name = session.get_inputs()[0].name
     output_name = session.get_outputs()[0].name
@@ -162,6 +168,7 @@ def validate_onnx_parity(
 
 
 # ── INT8 Dynamic Quantization ────────────────────────────────────────────────
+
 
 def quantize_onnx_model(
     onnx_path: str | Path,
@@ -227,6 +234,7 @@ def quantize_onnx_model(
 
 
 # ── Full Export & Optimization Pipeline ──────────────────────────────────────
+
 
 def export_and_optimize_pipeline(
     checkpoint_path: str | Path,

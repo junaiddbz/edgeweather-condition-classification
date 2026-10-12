@@ -19,7 +19,7 @@ from tqdm import tqdm
 
 LABEL_NAMES = [
     "dew",
-    "fog",       # mapped from fogsmog in source archive
+    "fog",  # mapped from fogsmog in source archive
     "frost",
     "glaze",
     "hail",
@@ -39,6 +39,7 @@ HF_ARROW_URLS = {
 
 class DownloadProgressBar(tqdm):
     """Callback hook for urllib to render a dynamic download progress bar."""
+
     def update_to(self, b: int = 1, bsize: int = 1, tsize: int | None = None) -> None:
         if tsize is not None:
             self.total = tsize
@@ -49,13 +50,15 @@ def download_file(url: str, output_path: Path) -> Path:
     """Download a remote URL to local disk with progress monitoring."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
     if output_path.exists() and output_path.stat().st_size > 0:
-        print(f"Archive already exists locally: {output_path} ({output_path.stat().st_size / (1024*1024):.1f} MB)")
+        print(
+            f"Archive already exists locally: {output_path} ({output_path.stat().st_size / (1024 * 1024):.1f} MB)"
+        )
         return output_path
 
     print(f"Downloading from {url}...")
     with DownloadProgressBar(unit="B", unit_scale=True, miniters=1, desc=output_path.name) as t:
         urllib.request.urlretrieve(url, filename=output_path, reporthook=t.update_to)
-    print(f"Saved: {output_path} ({output_path.stat().st_size / (1024*1024):.1f} MB)")
+    print(f"Saved: {output_path} ({output_path.stat().st_size / (1024 * 1024):.1f} MB)")
     return output_path
 
 

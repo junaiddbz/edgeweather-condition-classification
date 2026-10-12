@@ -37,6 +37,7 @@ logger = get_logger(__name__)
 
 # ── Colormap & Overlay Helpers ───────────────────────────────────────────────
 
+
 def overlay_heatmap_on_image(
     image: np.ndarray | Image.Image,
     heatmap: np.ndarray,
@@ -84,6 +85,7 @@ def overlay_heatmap_on_image(
 
 # ── Grad-CAM & Grad-CAM++ for CNNs ───────────────────────────────────────────
 
+
 class GradCAM:
     """Gradient-weighted Class Activation Mapping (Grad-CAM & Grad-CAM++).
 
@@ -126,10 +128,13 @@ class GradCAM:
 
     def _register_hooks(self) -> None:
         """Register forward and backward hooks on target convolutional layer."""
+
         def forward_hook(module: nn.Module, inp: Any, out: torch.Tensor) -> None:
             self.activations = out.detach()
 
-        def backward_hook(module: nn.Module, grad_inp: Any, grad_out: tuple[torch.Tensor, ...]) -> None:
+        def backward_hook(
+            module: nn.Module, grad_inp: Any, grad_out: tuple[torch.Tensor, ...]
+        ) -> None:
             self.gradients = grad_out[0].detach()
 
         self._hooks.append(self.target_layer.register_forward_hook(forward_hook))
@@ -176,10 +181,12 @@ class GradCAM:
         score.backward(retain_graph=True)
 
         if self.activations is None or self.gradients is None:
-            raise RuntimeError("Failed to capture activations or gradients. Check hook registration.")
+            raise RuntimeError(
+                "Failed to capture activations or gradients. Check hook registration."
+            )
 
         activations = self.activations[0]  # (C, H, W)
-        gradients = self.gradients[0]      # (C, H, W)
+        gradients = self.gradients[0]  # (C, H, W)
 
         if self.variant == "gradcam++":
             # Grad-CAM++ formulation: higher-order derivative weighting
@@ -214,6 +221,7 @@ class GradCAM:
 
 
 # ── Attention Rollout for Vision Transformers (ViT-Tiny) ─────────────────────
+
 
 class AttentionRolloutViT:
     """Attention Rollout algorithm for Vision Transformers (Abnar & Zuidema, 2020).
@@ -331,7 +339,9 @@ class AttentionRolloutViT:
                 k = int(len(flat) * self.discard_ratio)
                 if k > 0:
                     thresh = torch.kthvalue(flat, k)[0]
-                    attn_fused = torch.where(attn_fused < thresh, torch.zeros_like(attn_fused), attn_fused)
+                    attn_fused = torch.where(
+                        attn_fused < thresh, torch.zeros_like(attn_fused), attn_fused
+                    )
 
             # Account for residual connection: A_hat = 0.5 * A + 0.5 * I
             attn_fused = 0.5 * attn_fused + 0.5 * torch.eye(num_tokens)
@@ -355,6 +365,7 @@ class AttentionRolloutViT:
 
 
 # ── 4-Panel Comparative Interpretability Grid ────────────────────────────────
+
 
 def generate_comparative_xai_grid(
     image_input: str | Path | np.ndarray | Image.Image,
@@ -399,7 +410,9 @@ def generate_comparative_xai_grid(
         tensor = transform_fn(image=raw_rgb)["image"].unsqueeze(0)
     else:
         # Standard ImageNet normalization
-        norm_arr = (raw_rgb / 255.0 - np.array([0.485, 0.456, 0.406])) / np.array([0.229, 0.224, 0.225])
+        norm_arr = (raw_rgb / 255.0 - np.array([0.485, 0.456, 0.406])) / np.array(
+            [0.229, 0.224, 0.225]
+        )
         tensor = torch.from_numpy(norm_arr.transpose(2, 0, 1)).float().unsqueeze(0)
 
     # 1. MobileNet Grad-CAM

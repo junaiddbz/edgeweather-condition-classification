@@ -119,9 +119,7 @@ class WeatherClassifier(nn.Module):
             self.pool = None
             self.head = None  # Built into timm vit model directly
         else:
-            raise ValueError(
-                f"Unsupported model: '{model_name}'. Choose from: {SUPPORTED_MODELS}"
-            )
+            raise ValueError(f"Unsupported model: '{model_name}'. Choose from: {SUPPORTED_MODELS}")
 
         logger.info(
             "Initialized '%s' | num_classes=%d | feature_dim=%d | pretrained=%s",
@@ -300,9 +298,8 @@ class WeatherClassifier(nn.Module):
             no_decay = param.ndim <= 1 or name.endswith(".bias")
 
             # Check if parameter belongs to the head
-            is_head = (
-                "head" in name
-                or (self.head is not None and any(p is param for p in self.head.parameters()))
+            is_head = "head" in name or (
+                self.head is not None and any(p is param for p in self.head.parameters())
             )
 
             if is_head:
@@ -318,7 +315,9 @@ class WeatherClassifier(nn.Module):
 
         groups: list[dict[str, Any]] = []
         if backbone_decay:
-            groups.append({"params": backbone_decay, "lr": backbone_lr, "weight_decay": weight_decay})
+            groups.append(
+                {"params": backbone_decay, "lr": backbone_lr, "weight_decay": weight_decay}
+            )
         if backbone_no_decay:
             groups.append({"params": backbone_no_decay, "lr": backbone_lr, "weight_decay": 0.0})
         if head_decay:
@@ -356,6 +355,7 @@ class WeatherClassifier(nn.Module):
 
 # ── Model Factory ────────────────────────────────────────────────────────────
 
+
 def build_model(
     config_or_name: dict[str, Any] | str,
     num_classes: int | None = None,
@@ -379,7 +379,9 @@ def build_model(
         dataset_cfg = cfg.get("dataset", {})
 
         model_name = model_cfg.get("name", "mobilenet_v3_large")
-        n_classes = num_classes or dataset_cfg.get("num_classes", len(dataset_cfg.get("classes", [1] * 6)))
+        n_classes = num_classes or dataset_cfg.get(
+            "num_classes", len(dataset_cfg.get("classes", [1] * 6))
+        )
         is_pretrained = model_cfg.get("pretrained", pretrained)
         drop = model_cfg.get("dropout_rate", dropout_rate)
     else:

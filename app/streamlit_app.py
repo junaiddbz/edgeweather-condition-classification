@@ -44,6 +44,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 try:
     import onnxruntime as ort
+
     HAS_ORT = True
 except ImportError:
     HAS_ORT = False
@@ -77,25 +78,26 @@ LINE = "#D3DADF"
 @dataclass(frozen=True)
 class Sky:
     """Atmosphere palette that the whole page adopts for a predicted class."""
-    accent: str   # gauge, bars, tab underline
-    top: str      # sky colour at the top of the result panel / page wash
-    bottom: str   # sky colour near the bottom of the result panel
+
+    accent: str  # gauge, bars, tab underline
+    top: str  # sky colour at the top of the result panel / page wash
+    bottom: str  # sky colour near the bottom of the result panel
 
 
 DEFAULT_SKY = Sky("#3F6F8C", "#DCE6EC", "#F1F5F7")
 
 SKIES: dict[str, Sky] = {
-    "dew":       Sky("#2F8277", "#D8ECE6", "#F2F8F5"),
-    "fog":       Sky("#5A6A78", "#D6DCE1", "#EEF0F2"),
-    "frost":     Sky("#3A82B5", "#D3E7F4", "#F0F7FB"),
-    "glaze":     Sky("#4A6BA3", "#D2DDEC", "#EDF1F7"),
-    "hail":      Sky("#5B6A9C", "#D5D9E8", "#EEF0F6"),
+    "dew": Sky("#2F8277", "#D8ECE6", "#F2F8F5"),
+    "fog": Sky("#5A6A78", "#D6DCE1", "#EEF0F2"),
+    "frost": Sky("#3A82B5", "#D3E7F4", "#F0F7FB"),
+    "glaze": Sky("#4A6BA3", "#D2DDEC", "#EDF1F7"),
+    "hail": Sky("#5B6A9C", "#D5D9E8", "#EEF0F6"),
     "lightning": Sky("#6B46C1", "#DCD3F0", "#F4F1FA"),
-    "rain":      Sky("#2B6A96", "#CBDBE7", "#EAF0F5"),
-    "rainbow":   Sky("#B8467F", "#F5E0D6", "#E4F0E8"),
-    "rime":      Sky("#5F849C", "#D9E4EB", "#F1F5F7"),
+    "rain": Sky("#2B6A96", "#CBDBE7", "#EAF0F5"),
+    "rainbow": Sky("#B8467F", "#F5E0D6", "#E4F0E8"),
+    "rime": Sky("#5F849C", "#D9E4EB", "#F1F5F7"),
     "sandstorm": Sky("#A8701A", "#EADBBF", "#F7F0E3"),
-    "snow":      Sky("#52779A", "#E2EAF0", "#F8FAFB"),
+    "snow": Sky("#52779A", "#E2EAF0", "#F8FAFB"),
 }
 
 
@@ -376,22 +378,37 @@ html(BASE_CSS)
 
 ARCH_SPECS = [
     {
-        "name": "MobileNetV3-Large", "key": "mobilenet_v3_large",
+        "name": "MobileNetV3-Large",
+        "key": "mobilenet_v3_large",
         "paradigm": "Hard-swish depthwise CNN",
-        "params_m": 4.2, "fp32_mb": 16.06, "int8_mb": 12.53, "int8_label": "12.53 MB",
-        "latency_ms": 2.87, "xai": "Grad-CAM / Grad-CAM++",
+        "params_m": 4.2,
+        "fp32_mb": 16.06,
+        "int8_mb": 12.53,
+        "int8_label": "12.53 MB",
+        "latency_ms": 2.87,
+        "xai": "Grad-CAM / Grad-CAM++",
     },
     {
-        "name": "ResNet-50", "key": "resnet50",
+        "name": "ResNet-50",
+        "key": "resnet50",
         "paradigm": "Residual bottleneck CNN",
-        "params_m": 23.5, "fp32_mb": 89.72, "int8_mb": 23.0, "int8_label": "~23 MB",
-        "latency_ms": 46.80, "xai": "Grad-CAM / Grad-CAM++",
+        "params_m": 23.5,
+        "fp32_mb": 89.72,
+        "int8_mb": 23.0,
+        "int8_label": "~23 MB",
+        "latency_ms": 46.80,
+        "xai": "Grad-CAM / Grad-CAM++",
     },
     {
-        "name": "ViT-Tiny (timm)", "key": "vit_tiny_patch16_224",
+        "name": "ViT-Tiny (timm)",
+        "key": "vit_tiny_patch16_224",
         "paradigm": "Multi-head self-attention, 16×16 patches",
-        "params_m": 5.5, "fp32_mb": 21.08, "int8_mb": 6.0, "int8_label": "~6 MB",
-        "latency_ms": 14.13, "xai": "Attention rollout",
+        "params_m": 5.5,
+        "fp32_mb": 21.08,
+        "int8_mb": 6.0,
+        "int8_label": "~6 MB",
+        "latency_ms": 14.13,
+        "xai": "Attention rollout",
     },
 ]
 
@@ -400,10 +417,10 @@ def arch_table_html() -> str:
     """Spec table; the best value in each numeric row is marked in bold with an accent underline."""
     rows = [
         ("Paradigm", lambda s: s["paradigm"], None),
-        ("Parameters", lambda s: f'{s["params_m"]} M', "params_m"),
-        ("Disk size, FP32", lambda s: f'{s["fp32_mb"]:.2f} MB', "fp32_mb"),
+        ("Parameters", lambda s: f"{s['params_m']} M", "params_m"),
+        ("Disk size, FP32", lambda s: f"{s['fp32_mb']:.2f} MB", "fp32_mb"),
         ("Disk size, INT8", lambda s: s["int8_label"], "int8_mb"),
-        ("Edge CPU latency", lambda s: f'{s["latency_ms"]:.2f} ms', "latency_ms"),
+        ("Edge CPU latency", lambda s: f"{s['latency_ms']:.2f} ms", "latency_ms"),
         ("Explainability", lambda s: s["xai"], None),
     ]
     head = "".join(f"<th>{escape(s['name'])}</th>" for s in ARCH_SPECS)
@@ -419,6 +436,7 @@ def arch_table_html() -> str:
 
 
 # ── Model & Engine Caching ───────────────────────────────────────────────────
+
 
 @st.cache_resource(show_spinner=False)
 def load_pytorch_model(
@@ -480,7 +498,9 @@ def run_onnx(path: Path, tensor: torch.Tensor) -> tuple[np.ndarray, float, float
     return exp / np.sum(exp), latency_ms, path.stat().st_size / (1024 * 1024)
 
 
-def run_pytorch(arch: str, ckpt_file: Path, tensor: torch.Tensor) -> tuple[np.ndarray, float, float]:
+def run_pytorch(
+    arch: str, ckpt_file: Path, tensor: torch.Tensor
+) -> tuple[np.ndarray, float, float]:
     """Run one timed PyTorch inference. Returns (probabilities, latency_ms, size_mb)."""
     ckpt = str(ckpt_file) if ckpt_file.exists() else None
     model = load_pytorch_model(arch, checkpoint_path=ckpt)
@@ -498,6 +518,7 @@ def run_pytorch(arch: str, ckpt_file: Path, tensor: torch.Tensor) -> tuple[np.nd
 
 
 # ── Preloaded Curated Samples ────────────────────────────────────────────────
+
 
 def get_preloaded_sample_paths() -> dict[str, Path]:
     """Scan available real dataset or synthetic sample images."""
@@ -522,6 +543,7 @@ def get_preloaded_sample_paths() -> dict[str, Path]:
 
 
 # ── Small HTML Component Builders ────────────────────────────────────────────
+
 
 def gauge_svg(conf: float) -> str:
     """Barometer-style semicircle gauge for prediction confidence (0-100)."""
@@ -568,6 +590,7 @@ def bars_html(
 
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
+
 
 @dataclass
 class Settings:
@@ -630,10 +653,13 @@ def render_sidebar() -> Settings:
             """
         )
 
-    return Settings(arch, arch_label, engine, xai_method, alpha, colormap, onnx_int8, onnx_fp32, ckpt)
+    return Settings(
+        arch, arch_label, engine, xai_method, alpha, colormap, onnx_int8, onnx_fp32, ckpt
+    )
 
 
 # ── Tab 1: Live Inference ────────────────────────────────────────────────────
+
 
 def render_live_tab(cfg: Settings) -> None:
     st.markdown("### Choose a photo")
@@ -747,7 +773,10 @@ def render_live_tab(cfg: Settings) -> None:
             raw_cam, _, _ = cam_tool.generate_heatmap(tensor_input, target_class=top_idx)
 
         overlay_result = overlay_heatmap_on_image(
-            rgb_raw, raw_cam, alpha=cfg.alpha, colormap=cv2_cmap,
+            rgb_raw,
+            raw_cam,
+            alpha=cfg.alpha,
+            colormap=cv2_cmap,
         )
     except Exception as xai_err:
         logging.warning("XAI extraction fallback: %s", xai_err)
@@ -796,8 +825,10 @@ def render_live_tab(cfg: Settings) -> None:
         with img_tabs[1]:
             st.image(rgb_raw, caption="Input photo", use_container_width=True)
         with img_tabs[2]:
-            disp_cam = raw_cam if raw_cam.shape[:2] == (h, w) else cv2.resize(
-                raw_cam, (w, h), interpolation=cv2.INTER_LINEAR
+            disp_cam = (
+                raw_cam
+                if raw_cam.shape[:2] == (h, w)
+                else cv2.resize(raw_cam, (w, h), interpolation=cv2.INTER_LINEAR)
             )
             c_min, c_max = float(disp_cam.min()), float(disp_cam.max())
             if c_max > c_min:
@@ -835,7 +866,12 @@ def render_live_tab(cfg: Settings) -> None:
 
     with st.expander("Show as table"):
         st.dataframe(
-            pd.DataFrame({"Weather condition": sorted_names, "Probability (%)": [round(v, 2) for v in sorted_vals]}),
+            pd.DataFrame(
+                {
+                    "Weather condition": sorted_names,
+                    "Probability (%)": [round(v, 2) for v in sorted_vals],
+                }
+            ),
             use_container_width=True,
             hide_index=True,
         )
@@ -843,8 +879,11 @@ def render_live_tab(cfg: Settings) -> None:
 
 # ── Tab 2: Benchmark ─────────────────────────────────────────────────────────
 
+
 def benchmark_chart(df: pd.DataFrame, accent: str) -> alt.Chart | None:
-    label_cols = [c for c in ("model", "engine", "precision", "runtime", "backend") if c in df.columns]
+    label_cols = [
+        c for c in ("model", "engine", "precision", "runtime", "backend") if c in df.columns
+    ]
     if "p50_ms" not in df.columns or not label_cols:
         return None
     d = df.copy()
@@ -859,8 +898,12 @@ def benchmark_chart(df: pd.DataFrame, accent: str) -> alt.Chart | None:
         )
         .properties(height=max(120, 34 * len(d)))
         .configure_axis(
-            labelColor=INK, titleColor=MUTED, gridColor=LINE, domainColor=LINE,
-            labelFont="Instrument Sans", titleFont="Instrument Sans",
+            labelColor=INK,
+            titleColor=MUTED,
+            gridColor=LINE,
+            domainColor=LINE,
+            labelFont="Instrument Sans",
+            titleFont="Instrument Sans",
         )
         .configure_view(strokeWidth=0)
     )
@@ -903,13 +946,20 @@ def render_benchmark_tab(cfg: Settings) -> None:
         if {"model", "engine", "p50_ms"} <= set(df_bench.columns):
             py_baselines = {}
             for m in df_bench["model"].unique():
-                m_py = df_bench[(df_bench["model"] == m) & (df_bench["engine"].str.contains("PyTorch FP32", na=False))]
+                m_py = df_bench[
+                    (df_bench["model"] == m)
+                    & (df_bench["engine"].str.contains("PyTorch FP32", na=False))
+                ]
                 if not m_py.empty:
                     py_baselines[m] = m_py["p50_ms"].values[0]
 
             if py_baselines:
                 df_bench["speedup_vs_pytorch_cpu"] = df_bench.apply(
-                    lambda r: f"{py_baselines[r['model']] / r['p50_ms']:.2f}×" if r["model"] in py_baselines else "-",
+                    lambda r: (
+                        f"{py_baselines[r['model']] / r['p50_ms']:.2f}×"
+                        if r["model"] in py_baselines
+                        else "-"
+                    ),
                     axis=1,
                 )
 
@@ -985,6 +1035,7 @@ def render_benchmark_tab(cfg: Settings) -> None:
 
 # ── Tab 3: Methodology ───────────────────────────────────────────────────────
 
+
 def cost_heatmap(cost_df: pd.DataFrame, accent: str) -> alt.Chart:
     names = list(cost_df.index)
     long = (
@@ -994,7 +1045,9 @@ def cost_heatmap(cost_df: pd.DataFrame, accent: str) -> alt.Chart:
     )
     threshold = float(long["Cost"].max()) * 0.55
     base = alt.Chart(long).encode(
-        x=alt.X("Predicted as:N", sort=names, title=None, axis=alt.Axis(labelAngle=-40, orient="top")),
+        x=alt.X(
+            "Predicted as:N", sort=names, title=None, axis=alt.Axis(labelAngle=-40, orient="top")
+        ),
         y=alt.Y("True class:N", sort=names, title=None),
     )
     heat = base.mark_rect(stroke="#F8FAFB", strokeWidth=2, cornerRadius=3).encode(
@@ -1125,6 +1178,7 @@ def render_method_tab() -> None:
 
 # ── Tab 4: Dataset & About ───────────────────────────────────────────────────
 
+
 def render_about_tab() -> None:
     st.markdown("### Project & Dataset Overview")
 
@@ -1212,8 +1266,11 @@ def render_about_tab() -> None:
 
 # ── Main Application ──────────────────────────────────────────────────────────
 
+
 def main() -> None:
-    class_chips_html = "".join(f'<span class="class-chip">{escape(c.title())}</span>' for c in DEFAULT_CLASSES)
+    class_chips_html = "".join(
+        f'<span class="class-chip">{escape(c.title())}</span>' for c in DEFAULT_CLASSES
+    )
 
     html(
         f"""
@@ -1239,12 +1296,14 @@ def main() -> None:
 
     cfg = render_sidebar()
 
-    tab1, tab2, tab3, tab4 = st.tabs([
-        "Classify a photo",
-        "Benchmarks",
-        "Methodology",
-        "Dataset & About",
-    ])
+    tab1, tab2, tab3, tab4 = st.tabs(
+        [
+            "Classify a photo",
+            "Benchmarks",
+            "Methodology",
+            "Dataset & About",
+        ]
+    )
     with tab1:
         render_live_tab(cfg)
     with tab2:

@@ -83,14 +83,17 @@ def test_empirical_calibration_update():
     loss_fn = ConfusionAwareLoss(num_classes=6)
     initial_matrix = loss_fn.cost_matrix.clone()
 
-    empirical_cm = np.array([
-        [50, 2, 0, 1, 0, 5],
-        [3, 45, 1, 0, 8, 2],
-        [0, 1, 55, 4, 0, 0],
-        [2, 0, 3, 52, 0, 1],
-        [0, 7, 0, 0, 48, 3],
-        [6, 1, 0, 2, 4, 45],
-    ], dtype=np.float32)
+    empirical_cm = np.array(
+        [
+            [50, 2, 0, 1, 0, 5],
+            [3, 45, 1, 0, 8, 2],
+            [0, 1, 55, 4, 0, 0],
+            [2, 0, 3, 52, 0, 1],
+            [0, 7, 0, 0, 48, 3],
+            [6, 1, 0, 2, 4, 45],
+        ],
+        dtype=np.float32,
+    )
 
     loss_fn.update_from_empirical_confusion(empirical_cm, blend_factor=0.5)
 
@@ -105,7 +108,9 @@ def test_build_loss_fn_factory():
     loss_ce = build_loss_fn(config_ce)
     assert isinstance(loss_ce, torch.nn.CrossEntropyLoss)
 
-    config_ca = {"loss": {"label_smoothing": 0.1, "confusion_aware": {"enabled": True, "lambda_weight": 0.4}}}
+    config_ca = {
+        "loss": {"label_smoothing": 0.1, "confusion_aware": {"enabled": True, "lambda_weight": 0.4}}
+    }
     loss_ca = build_loss_fn(config_ca)
     assert isinstance(loss_ca, ConfusionAwareLoss)
     assert loss_ca.lambda_weight == 0.4

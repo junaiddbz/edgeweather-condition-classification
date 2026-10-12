@@ -47,6 +47,7 @@ IMAGENET_STD: tuple[float, float, float] = (0.229, 0.224, 0.225)
 
 # ── Augmentation Pipelines ───────────────────────────────────────────────────
 
+
 def get_train_transforms(
     image_size: int = 224,
     mean: Sequence[float] = IMAGENET_MEAN,
@@ -143,6 +144,7 @@ def get_eval_transforms(
 
 # ── PyTorch Weather Dataset ──────────────────────────────────────────────────
 
+
 class WeatherDataset(Dataset):
     """PyTorch Dataset for multi-class weather condition classification.
 
@@ -231,13 +233,17 @@ class WeatherDataset(Dataset):
         """
         row = self.df.iloc[idx]
         raw_path = Path(str(row["filepath"]))
-        img_path = (self.base_dir / raw_path) if self.base_dir and not raw_path.is_absolute() else raw_path
+        img_path = (
+            (self.base_dir / raw_path) if self.base_dir and not raw_path.is_absolute() else raw_path
+        )
 
         try:
             with Image.open(img_path) as img:
                 img_rgb = np.array(img.convert("RGB"))
         except Exception as exc:
-            logger.warning("Failed to load image %s (%s). Falling back to neutral canvas.", img_path, exc)
+            logger.warning(
+                "Failed to load image %s (%s). Falling back to neutral canvas.", img_path, exc
+            )
             img_rgb = np.zeros((224, 224, 3), dtype=np.uint8)
 
         if self.transforms is not None:
@@ -262,6 +268,7 @@ class WeatherDataset(Dataset):
 
 
 # ── DataLoader Factory ───────────────────────────────────────────────────────
+
 
 def create_dataloaders(
     config: dict[str, Any],
@@ -292,6 +299,7 @@ def create_dataloaders(
     # On Windows, PyTorch DataLoader spawn mode causes re-import loops and IPC delays.
     # Set safe default num_workers=0 on Windows unless explicitly forced.
     import sys
+
     if sys.platform == "win32" and not dataloader_cfg.get("force_multiprocessing", False):
         num_workers = 0
     else:
@@ -358,6 +366,7 @@ def create_dataloaders(
 
 
 # ── Synthetic Dataset Generator (for CI/CD, tests & dry-runs) ────────────────
+
 
 def create_synthetic_weather_dataset(
     output_dir: str | Path,
@@ -433,10 +442,12 @@ def create_synthetic_weather_dataset(
             file_path = images_dir / filename
             img.save(file_path, "JPEG", quality=90)
 
-            records.append({
-                "filepath": str(file_path.resolve()),
-                "label": class_name,
-            })
+            records.append(
+                {
+                    "filepath": str(file_path.resolve()),
+                    "label": class_name,
+                }
+            )
 
     full_df = pd.DataFrame(records).sample(frac=1.0, random_state=42).reset_index(drop=True)
 

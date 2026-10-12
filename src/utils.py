@@ -26,6 +26,7 @@ from rich.logging import RichHandler
 
 # ── Reproducibility ─────────────────────────────────────────────────────────
 
+
 def set_global_seed(seed: int = 42) -> None:
     """Fix all random seeds for full reproducibility.
 
@@ -49,6 +50,7 @@ set_seed = set_global_seed
 
 
 # ── Configuration Loading ────────────────────────────────────────────────────
+
 
 def load_config(config_path: str | Path) -> dict[str, Any]:
     """Load a YAML configuration file and return it as a nested dict.
@@ -150,6 +152,7 @@ def get_logger(name: str, level: int = logging.INFO) -> logging.Logger:
 
 
 # ── Path Helpers ─────────────────────────────────────────────────────────────
+
 
 def ensure_dir(path: str | Path) -> Path:
     """Create directory (and any missing parents) if it does not exist.

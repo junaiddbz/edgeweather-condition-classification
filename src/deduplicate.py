@@ -51,6 +51,7 @@ logger = get_logger(__name__)
 
 # ── Hash computation ─────────────────────────────────────────────────────────
 
+
 def compute_image_hash(
     image_path: Path,
     hash_size: int = 8,
@@ -101,10 +102,7 @@ def hash_dataset(
         ``path``, ``class_name``, ``phash``, ``dhash``.
     """
     records: list[dict] = []
-    image_paths = [
-        p for p in raw_dir.rglob("*")
-        if p.suffix.lower() in extensions
-    ]
+    image_paths = [p for p in raw_dir.rglob("*") if p.suffix.lower() in extensions]
 
     logger.info(f"Computing hashes for {len(image_paths):,} images…")
 
@@ -112,12 +110,14 @@ def hash_dataset(
         class_name = img_path.parent.name
         try:
             phash, dhash = compute_image_hash(img_path)
-            records.append({
-                "path": str(img_path),
-                "class_name": class_name,
-                "phash": str(phash),
-                "dhash": str(dhash),
-            })
+            records.append(
+                {
+                    "path": str(img_path),
+                    "class_name": class_name,
+                    "phash": str(phash),
+                    "dhash": str(dhash),
+                }
+            )
         except (OSError, Exception) as exc:
             logger.warning(f"Skipping {img_path.name}: {exc}")
 
@@ -127,6 +127,7 @@ def hash_dataset(
 
 
 # ── Duplicate detection ───────────────────────────────────────────────────────
+
 
 def find_duplicate_groups(
     df: pd.DataFrame,
@@ -168,8 +169,7 @@ def find_duplicate_groups(
 
     for i in tqdm(range(n), desc="Dedup scan", unit="img"):
         for j in range(i + 1, n):
-            if (phashes[i] - phashes[j]) <= threshold and \
-               (dhashes[i] - dhashes[j]) <= threshold:
+            if (phashes[i] - phashes[j]) <= threshold and (dhashes[i] - dhashes[j]) <= threshold:
                 union(i, j)
                 duplicate_pairs += 1
 
@@ -179,10 +179,7 @@ def find_duplicate_groups(
         groups[find(idx)].append(idx)
 
     dup_groups = [g for g in groups.values() if len(g) > 1]
-    logger.info(
-        f"Found {duplicate_pairs:,} near-duplicate pairs "
-        f"in {len(dup_groups):,} groups."
-    )
+    logger.info(f"Found {duplicate_pairs:,} near-duplicate pairs in {len(dup_groups):,} groups.")
     return dup_groups
 
 
@@ -206,14 +203,12 @@ def prune_duplicates(df: pd.DataFrame, dup_groups: list[list[int]]) -> pd.DataFr
         indices_to_drop.update(sorted_group[1:])
 
     pruned = df.drop(index=list(indices_to_drop)).reset_index(drop=True)
-    logger.info(
-        f"Pruned {len(indices_to_drop):,} duplicates. "
-        f"Remaining: {len(pruned):,} images."
-    )
+    logger.info(f"Pruned {len(indices_to_drop):,} duplicates. Remaining: {len(pruned):,} images.")
     return pruned
 
 
 # ── Stratified splitting ──────────────────────────────────────────────────────
+
 
 def stratified_split(
     df: pd.DataFrame,
@@ -254,8 +249,7 @@ def stratified_split(
     test_df = temp_df.iloc[test_idx].reset_index(drop=True)
 
     logger.info(
-        f"Split sizes — train: {len(train_df):,} | "
-        f"val: {len(val_df):,} | test: {len(test_df):,}"
+        f"Split sizes — train: {len(train_df):,} | val: {len(val_df):,} | test: {len(test_df):,}"
     )
     _log_class_distribution(train_df, "Train")
     _log_class_distribution(val_df, "Val")
@@ -271,6 +265,7 @@ def _log_class_distribution(df: pd.DataFrame, split_name: str) -> None:
 
 
 # ── CSV export ────────────────────────────────────────────────────────────────
+
 
 def save_split_csvs(
     train_df: pd.DataFrame,
@@ -297,6 +292,7 @@ def save_split_csvs(
 
 
 # ── Hamming distance statistics ───────────────────────────────────────────────
+
 
 def compute_hamming_stats(df: pd.DataFrame, sample_n: int = 5000) -> dict[str, float]:
     """Compute summary statistics of pairwise pHash Hamming distances.
@@ -335,16 +331,29 @@ def compute_hamming_stats(df: pd.DataFrame, sample_n: int = 5000) -> dict[str, f
 
 # ── CLI entry point ───────────────────────────────────────────────────────────
 
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="EdgeWeather: Perceptual hash deduplication & stratified splitting."
     )
-    parser.add_argument("--raw_dir", type=Path, default=Path("data/raw"),
-                        help="Root directory with one subdirectory per class.")
-    parser.add_argument("--out_dir", type=Path, default=Path("data/processed"),
-                        help="Output directory for train/val/test CSVs.")
-    parser.add_argument("--threshold", type=int, default=4,
-                        help="Hamming distance threshold for near-duplicate detection.")
+    parser.add_argument(
+        "--raw_dir",
+        type=Path,
+        default=Path("data/raw"),
+        help="Root directory with one subdirectory per class.",
+    )
+    parser.add_argument(
+        "--out_dir",
+        type=Path,
+        default=Path("data/processed"),
+        help="Output directory for train/val/test CSVs.",
+    )
+    parser.add_argument(
+        "--threshold",
+        type=int,
+        default=4,
+        help="Hamming distance threshold for near-duplicate detection.",
+    )
     parser.add_argument("--train_frac", type=float, default=0.70)
     parser.add_argument("--val_frac", type=float, default=0.15)
     parser.add_argument("--seed", type=int, default=42)
