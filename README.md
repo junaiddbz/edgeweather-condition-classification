@@ -1,6 +1,6 @@
 # EdgeWeather: Image-Based Weather Condition Classification via Transfer Learning and Edge Optimization
 
-[![CI](https://github.com/junaiddbz/edgeweather-condition-classification/actions/workflows/ci.yml/badge.svg)](https://github.com/junaiddbz/edgeweather-condition-classification/actions)
+[![CI](https://github.com/junaiddbz/edgeweather-condition-classification/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/junaiddbz/edgeweather-condition-classification/actions/workflows/ci.yml)
 [![Python 3.10](https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white)](https://www.python.org/downloads/release/python-3100/)
 [![PyTorch 2.5](https://img.shields.io/badge/PyTorch-2.5-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
 [![ONNX Runtime](https://img.shields.io/badge/ONNX_Runtime-INT8_Quantized-005CED?logo=onnx&logoColor=white)](https://onnxruntime.ai/)
