@@ -38,7 +38,7 @@ jobs:
           # Install CPU-only torch for CI (faster, no GPU needed)
           pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
           pip install timm albumentations opencv-python-headless numpy pandas Pillow imagehash scikit-learn scipy
-          pip install onnx onnxruntime matplotlib seaborn rich altair streamlit
+          pip install onnx onnxruntime onnxscript matplotlib seaborn rich altair streamlit
           pip install torchmetrics PyYAML tqdm pytest pytest-cov
       - name: Run tests
         run: pytest tests/ -v --tb=short --cov=src --cov-report=xml
