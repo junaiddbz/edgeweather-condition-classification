@@ -446,10 +446,20 @@ def load_pytorch_model(
 ) -> WeatherClassifier:
     """Load or initialize PyTorch model with optional checkpoint weights."""
     model = build_model(config_or_name=model_name, num_classes=num_classes, pretrained=False)
-    if checkpoint_path and Path(checkpoint_path).exists():
-        ckpt = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+    resolved_path: Path | None = None
+    if checkpoint_path:
+        p = Path(checkpoint_path)
+        if p.exists():
+            resolved_path = p
+        elif (PROJECT_ROOT / p).exists():
+            resolved_path = PROJECT_ROOT / p
+    if resolved_path is not None:
+        ckpt = torch.load(resolved_path, map_location="cpu", weights_only=False)
         if "model_state_dict" in ckpt:
             model.load_state_dict(ckpt["model_state_dict"])
+            logging.info("Loaded checkpoint weights from %s", resolved_path)
+    else:
+        logging.warning("No checkpoint found at '%s' for model '%s'", checkpoint_path, model_name)
     model.eval()
     return model
 
@@ -457,13 +467,19 @@ def load_pytorch_model(
 @st.cache_resource(show_spinner=False)
 def load_onnx_session(onnx_path: str) -> ort.InferenceSession | None:
     """Load ONNX Runtime InferenceSession with CPU Execution Provider."""
-    if not HAS_ORT or not Path(onnx_path).exists():
+    if not HAS_ORT:
         return None
+    p = Path(onnx_path)
+    if not p.exists():
+        if (PROJECT_ROOT / p).exists():
+            p = PROJECT_ROOT / p
+        else:
+            return None
     session_options = ort.SessionOptions()
     session_options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
     session_options.intra_op_num_threads = 4
     session = ort.InferenceSession(
-        onnx_path,
+        str(p),
         sess_options=session_options,
         providers=["CPUExecutionProvider"],
     )
@@ -631,19 +647,26 @@ def render_sidebar() -> Settings:
         arch_label = st.selectbox("Architecture", options=list(arch_options.keys()), index=0)
         arch = arch_options[arch_label]
 
-        onnx_int8 = Path(f"outputs/onnx/{arch}_fp32_int8.onnx")
-        onnx_fp32 = Path(f"outputs/onnx/{arch}_fp32.onnx")
-        ckpt = Path(f"outputs/checkpoints/{arch}_best.pt")
+        onnx_int8 = PROJECT_ROOT / f"outputs/onnx/{arch}_fp32_int8.onnx"
+        onnx_fp32 = PROJECT_ROOT / f"outputs/onnx/{arch}_fp32.onnx"
+        ckpt = PROJECT_ROOT / f"outputs/checkpoints/{arch}_best.pt"
 
         engine_options = [
             "ONNX Runtime INT8 (dynamic quantized)",
             "ONNX Runtime FP32",
             "PyTorch FP32",
         ]
+        if onnx_int8.exists() and HAS_ORT:
+            default_engine_idx = 0
+        elif onnx_fp32.exists() and HAS_ORT:
+            default_engine_idx = 1
+        else:
+            default_engine_idx = 2
+
         engine = st.selectbox(
             "Inference engine",
             options=engine_options,
-            index=0 if onnx_int8.exists() else 2,
+            index=default_engine_idx,
         )
 
         st.markdown("&nbsp;", unsafe_allow_html=True)
@@ -735,15 +758,19 @@ def render_live_tab(cfg: Settings) -> None:
         if cfg.onnx_int8.exists():
             result = run_onnx(cfg.onnx_int8, tensor_input)
         if result is None:
-            notice = f"The INT8 model is unavailable ({cfg.onnx_int8}), or onnxruntime is not installed. Using PyTorch FP32 instead."
+            notice = f"The INT8 model is unavailable ({cfg.onnx_int8.name}), or onnxruntime is not installed. Using PyTorch FP32 instead."
             engine = "PyTorch FP32"
     elif "ONNX Runtime FP32" in engine:
         if cfg.onnx_fp32.exists():
             result = run_onnx(cfg.onnx_fp32, tensor_input)
         if result is None:
-            notice = f"The ONNX FP32 model is unavailable ({cfg.onnx_fp32}), or onnxruntime is not installed. Using PyTorch FP32 instead."
+            notice = f"The ONNX FP32 model is unavailable ({cfg.onnx_fp32.name}), or onnxruntime is not installed. Using PyTorch FP32 instead."
             engine = "PyTorch FP32"
     if result is None:
+        if not cfg.ckpt.exists():
+            notice = (
+                f"Trained checkpoint `{cfg.ckpt.name}` not found. Running uninitialized weights."
+            )
         result = run_pytorch(cfg.arch, cfg.ckpt, tensor_input)
 
     probabilities, latency_ms, model_size_mb = result

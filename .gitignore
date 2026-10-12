@@ -52,13 +52,21 @@ data/processed/*
 !data/processed/*.csv
 
 # --- Model Checkpoints & ONNX Weights ---
-# Heavy binary weights should be tracked via Git LFS, DVC, or releases
 outputs/checkpoints/*.pt
 outputs/checkpoints/*.pth
 outputs/checkpoints/*.bin
 !outputs/checkpoints/.gitkeep
+# Track production checkpoints for Streamlit deployment
+!outputs/checkpoints/mobilenet_v3_large_best.pt
+!outputs/checkpoints/vit_tiny_patch16_224_best.pt
+!outputs/checkpoints/resnet50_best.pt
+
 outputs/onnx/*.onnx
 !outputs/onnx/.gitkeep
+# Track edge ONNX weights for Streamlit deployment
+!outputs/onnx/mobilenet_v3_large_fp32_int8.onnx
+!outputs/onnx/mobilenet_v3_large_fp32.onnx
+!outputs/onnx/vit_tiny_patch16_224_fp32_int8.onnx
 
 # --- Experiment Results & Figures ---
 # Preserve directory structure; benchmark summaries & key figures are tracked
