@@ -27,16 +27,15 @@ import time
 from dataclasses import dataclass
 from html import escape
 from pathlib import Path
-from typing import Tuple
 
 import altair as alt
 import cv2
 import numpy as np
 import pandas as pd
-from PIL import Image
 import streamlit as st
 import torch
 import torch.nn.functional as F
+from PIL import Image
 
 # Ensure repository root is on sys.path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -455,8 +454,8 @@ def load_onnx_session(onnx_path: str) -> ort.InferenceSession | None:
 
 def preprocess_image_for_model(
     img: Image.Image,
-    target_size: int | Tuple[int, int] = 224,
-) -> Tuple[np.ndarray, torch.Tensor]:
+    target_size: int | tuple[int, int] = 224,
+) -> tuple[np.ndarray, torch.Tensor]:
     """Convert PIL image to preprocessed RGB array and normalized PyTorch tensor."""
     rgb_img = np.array(img.convert("RGB"))
     size_int = target_size[0] if isinstance(target_size, (tuple, list)) else int(target_size)
@@ -466,7 +465,7 @@ def preprocess_image_for_model(
     return rgb_img, tensor
 
 
-def run_onnx(path: Path, tensor: torch.Tensor) -> Tuple[np.ndarray, float, float] | None:
+def run_onnx(path: Path, tensor: torch.Tensor) -> tuple[np.ndarray, float, float] | None:
     """Run one timed ONNX inference. Returns (probabilities, latency_ms, size_mb) or None."""
     session = load_onnx_session(str(path))
     if session is None:
@@ -481,7 +480,7 @@ def run_onnx(path: Path, tensor: torch.Tensor) -> Tuple[np.ndarray, float, float
     return exp / np.sum(exp), latency_ms, path.stat().st_size / (1024 * 1024)
 
 
-def run_pytorch(arch: str, ckpt_file: Path, tensor: torch.Tensor) -> Tuple[np.ndarray, float, float]:
+def run_pytorch(arch: str, ckpt_file: Path, tensor: torch.Tensor) -> tuple[np.ndarray, float, float]:
     """Run one timed PyTorch inference. Returns (probabilities, latency_ms, size_mb)."""
     ckpt = str(ckpt_file) if ckpt_file.exists() else None
     model = load_pytorch_model(arch, checkpoint_path=ckpt)
@@ -508,7 +507,7 @@ def get_preloaded_sample_paths() -> dict[str, Path]:
         for cls in DEFAULT_CLASSES:
             cls_folder = raw_dir / cls
             if cls_folder.exists():
-                matches = sorted(list(cls_folder.glob("*.jpg")))
+                matches = sorted(cls_folder.glob("*.jpg"))
                 if matches:
                     samples[cls] = matches[0]
 
@@ -557,7 +556,7 @@ def bars_html(
     scale_max: float = 100.0,
 ) -> str:
     rows = []
-    for i, (n, v) in enumerate(zip(names, values)):
+    for i, (n, v) in enumerate(zip(names, values, strict=False)):
         width = max(v / scale_max * 100.0, 0.5)
         top = " top" if i == highlight else ""
         rows.append(
@@ -815,9 +814,9 @@ def render_live_tab(cfg: Settings) -> None:
     # ── Telemetry readout
     within = latency_ms < 10.0
     speed_note = (
-        f'<span class="dot ok"></span>Under the 10 ms target'
+        '<span class="dot ok"></span>Under the 10 ms target'
         if within
-        else f'<span class="dot"></span>Over the 10 ms target'
+        else '<span class="dot"></span>Over the 10 ms target'
     )
     html(
         '<div class="readout">'

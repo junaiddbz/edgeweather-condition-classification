@@ -16,16 +16,18 @@ from __future__ import annotations
 
 import argparse
 import json
-import logging
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any
 
 import matplotlib
+
 matplotlib.use("Agg")  # Non-interactive backend for headless environments
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import seaborn as sns
+import torch
+import torch.nn as nn
 from sklearn.metrics import (
     accuracy_score,
     classification_report,
@@ -34,12 +36,10 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
 )
-import torch
-import torch.nn as nn
 from torch.utils.data import DataLoader
 
 from src.dataset import DEFAULT_CLASSES, create_dataloaders
-from src.models import WeatherClassifier, build_model
+from src.models import build_model
 from src.utils import ensure_dir, get_logger, load_full_config
 
 logger = get_logger(__name__)
@@ -253,7 +253,7 @@ def extract_top_failure_cases(
     confs = np.max(probabilities, axis=1)
 
     errors: list[dict[str, Any]] = []
-    for idx, (p, t, c, path) in enumerate(zip(preds, targets, confs, filepaths)):
+    for idx, (p, t, c, path) in enumerate(zip(preds, targets, confs, filepaths, strict=False)):
         if p != t:
             errors.append({
                 "index": idx,

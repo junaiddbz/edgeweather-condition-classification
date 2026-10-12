@@ -14,14 +14,15 @@ from __future__ import annotations
 
 import logging
 import random
+import sys
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 import torch
 import yaml
+from rich.console import Console
 from rich.logging import RichHandler
-
 
 # ── Reproducibility ─────────────────────────────────────────────────────────
 
@@ -112,9 +113,6 @@ def load_full_config(
 
 
 # ── Logging ──────────────────────────────────────────────────────────────────
-
-import sys
-from rich.console import Console
 
 # Ensure UTF-8 streams on Windows to avoid charmap codec errors
 if hasattr(sys.stdout, "reconfigure"):

@@ -12,16 +12,16 @@ Academic & Production Features:
 
 from __future__ import annotations
 
-import logging
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Callable, Sequence
+from typing import Any
 
 import albumentations as A
-from albumentations.pytorch import ToTensorV2
 import numpy as np
 import pandas as pd
-from PIL import Image, ImageDraw
 import torch
+from albumentations.pytorch import ToTensorV2
+from PIL import Image, ImageDraw
 from torch.utils.data import DataLoader, Dataset
 
 from src.utils import get_logger

@@ -5,13 +5,12 @@ Unit tests for ONNX export, numerical parity verification, INT8 quantization,
 and latency benchmarking profilers.
 """
 
-from pathlib import Path
 import tempfile
+from pathlib import Path
+
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import pytest
-import torch
 
 from src.benchmark import (
     benchmark_onnx,

@@ -5,14 +5,14 @@ Unit tests for EdgeWeather Streamlit web application helpers and telemetry.
 """
 
 from pathlib import Path
-from PIL import Image
+
 import numpy as np
-import pytest
 import torch
+from PIL import Image
 
 from app.streamlit_app import (
+    ARCH_SPECS,
     DEFAULT_CLASSES,
-    SAFETY_ADVISORIES,
     get_preloaded_sample_paths,
     load_onnx_session,
     load_pytorch_model,
@@ -20,15 +20,16 @@ from app.streamlit_app import (
 )
 
 
-def test_safety_advisories_coverage() -> None:
-    """Ensure every weather class has an advisory with required metadata."""
-    for cls in DEFAULT_CLASSES:
-        assert cls in SAFETY_ADVISORIES
-        adv = SAFETY_ADVISORIES[cls]
-        assert "level" in adv
-        assert "icon" in adv
-        assert "title" in adv
-        assert "desc" in adv
+def test_arch_specs_coverage() -> None:
+    """Ensure ARCH_SPECS contains specifications for all benchmark models."""
+    assert len(ARCH_SPECS) == 3
+    for spec in ARCH_SPECS:
+        assert "name" in spec
+        assert "key" in spec
+        assert "params_m" in spec
+        assert "latency_ms" in spec
+        assert spec["params_m"] > 0
+        assert spec["latency_ms"] > 0
 
 
 def test_preprocess_image_for_model() -> None:

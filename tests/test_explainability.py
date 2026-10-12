@@ -5,11 +5,11 @@ Unit tests for Grad-CAM, Grad-CAM++, Attention Rollout, heatmap overlays,
 and 4-panel comparative XAI visualization.
 """
 
-from pathlib import Path
 import tempfile
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
-import pytest
 import torch
 
 from src.dataset import DEFAULT_CLASSES

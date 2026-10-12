@@ -12,8 +12,9 @@ import argparse
 import io
 import urllib.request
 from pathlib import Path
-from PIL import Image
+
 import pyarrow.ipc as ipc
+from PIL import Image
 from tqdm import tqdm
 
 LABEL_NAMES = [

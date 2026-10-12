@@ -18,16 +18,15 @@ from __future__ import annotations
 
 import argparse
 import json
-import logging
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any
 
 import numpy as np
-from sklearn.metrics import f1_score, confusion_matrix
 import torch
 import torch.nn as nn
-from torch.optim import AdamW, SGD
-from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts, CosineAnnealingLR
+from sklearn.metrics import confusion_matrix, f1_score
+from torch.optim import AdamW
+from torch.optim.lr_scheduler import CosineAnnealingLR, CosineAnnealingWarmRestarts
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 

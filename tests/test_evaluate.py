@@ -5,13 +5,13 @@ Unit tests for the scientific evaluation suite: ECE, reliability diagrams,
 confusion matrix plotting, and failure analysis.
 """
 
-from pathlib import Path
 import tempfile
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 import torch
-from torch.utils.data import DataLoader, TensorDataset
 
 from src.dataset import DEFAULT_CLASSES
 from src.evaluate import (

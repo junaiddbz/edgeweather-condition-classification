@@ -16,12 +16,13 @@ Academic & Industry Features:
 from __future__ import annotations
 
 import argparse
-import logging
-from pathlib import Path
 import time
-from typing import Any, Sequence
+from collections.abc import Sequence
+from pathlib import Path
+from typing import Any
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
@@ -30,7 +31,7 @@ import pandas as pd
 import torch
 import torch.nn as nn
 
-from src.models import WeatherClassifier, build_model
+from src.models import build_model
 from src.utils import ensure_dir, get_logger
 
 logger = get_logger(__name__)
@@ -194,7 +195,7 @@ def plot_latency_comparison(
     ax1.set_title("Edge Inference Latency (CPU)", fontsize=13, fontweight="bold")
     ax1.grid(True, linestyle=":", alpha=0.6)
 
-    for bar, val in zip(bars1, df_results["p50_ms"]):
+    for bar, val in zip(bars1, df_results["p50_ms"], strict=False):
         ax1.text(val + max(df_results["p50_ms"]) * 0.02, bar.get_y() + bar.get_height() / 2, f"{val:.1f} ms", va="center", fontsize=10, fontweight="bold")
 
     # Panel 2: FPS Throughput (Higher is better)
@@ -206,7 +207,7 @@ def plot_latency_comparison(
     ax2.set_title("Inference Throughput (FPS)", fontsize=13, fontweight="bold")
     ax2.grid(True, linestyle=":", alpha=0.6)
 
-    for bar, val in zip(bars2, df_results["fps"]):
+    for bar, val in zip(bars2, df_results["fps"], strict=False):
         ax2.text(val + max(df_results["fps"]) * 0.02, bar.get_y() + bar.get_height() / 2, f"{val:.0f} FPS", va="center", fontsize=10, fontweight="bold")
 
     plt.tight_layout()

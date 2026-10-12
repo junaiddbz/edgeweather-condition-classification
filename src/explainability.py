@@ -13,22 +13,23 @@ Academic & Industry Features:
 
 from __future__ import annotations
 
-import logging
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any
 
 import cv2
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
-from PIL import Image
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from PIL import Image
 
 from src.dataset import DEFAULT_CLASSES
-from src.models import WeatherClassifier, build_model
+from src.models import WeatherClassifier
 from src.utils import ensure_dir, get_logger
 
 logger = get_logger(__name__)
@@ -204,10 +205,7 @@ class GradCAM:
 
         # Normalize to [0, 1]
         c_min, c_max = cam_np.min(), cam_np.max()
-        if c_max > c_min:
-            cam_np = (cam_np - c_min) / (c_max - c_min)
-        else:
-            cam_np = np.zeros_like(cam_np)
+        cam_np = (cam_np - c_min) / (c_max - c_min) if c_max > c_min else np.zeros_like(cam_np)
 
         return cam_np, pred_class, confidence
 
@@ -304,7 +302,7 @@ class AttentionRolloutViT:
         # Clean up hooks and restore fused_attn flags
         for hook in hooks:
             hook.remove()
-        for block, flag in zip(vit.blocks, prev_fused):
+        for block, flag in zip(vit.blocks, prev_fused, strict=False):
             block.attn.fused_attn = flag
 
         if not captured_attentions:

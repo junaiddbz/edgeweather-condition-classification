@@ -15,19 +15,19 @@ Academic & Industry Features:
 from __future__ import annotations
 
 import argparse
-import logging
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any
 
 import numpy as np
 import onnx
 import onnxruntime as ort
-from onnxruntime.quantization import QuantType, quantize_dynamic
 import torch
 import torch.nn as nn
+from onnxruntime.quantization import QuantType, quantize_dynamic
 
 from src.dataset import DEFAULT_CLASSES
-from src.models import WeatherClassifier, build_model
+from src.models import build_model
 from src.utils import ensure_dir, get_logger, load_full_config
 
 logger = get_logger(__name__)

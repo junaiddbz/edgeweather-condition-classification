@@ -8,10 +8,11 @@ completing the empirical comparative table alongside MobileNetV3-Large.
 
 import json
 from pathlib import Path
+
 import pandas as pd
 
-from src.train import train_model
 from src.evaluate import run_evaluation_pipeline
+from src.train import train_model
 from src.utils import get_logger
 
 logger = get_logger(__name__)
@@ -62,7 +63,7 @@ def main():
     mobilenet_eval_file = Path("outputs/results/mobilenet_v3_large_test_evaluation.json")
     mobilenet_eval = {}
     if mobilenet_eval_file.exists():
-        with open(mobilenet_eval_file, "r") as f:
+        with open(mobilenet_eval_file) as f:
             mobilenet_eval = json.load(f)
 
     # Load benchmark metrics if available

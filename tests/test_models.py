@@ -8,7 +8,7 @@ forward pass tensor dimensions, and feature extractors.
 import pytest
 import torch
 
-from src.models import SUPPORTED_MODELS, WeatherClassifier, build_model
+from src.models import SUPPORTED_MODELS, build_model
 
 
 @pytest.mark.parametrize("model_name", SUPPORTED_MODELS)

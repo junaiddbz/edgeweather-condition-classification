@@ -4,14 +4,15 @@ tests/test_train.py
 Unit tests for the two-stage transfer learning Trainer and training pipeline.
 """
 
-from pathlib import Path
 import tempfile
+from pathlib import Path
+
 import pytest
 import torch
 
 from src.dataset import DEFAULT_CLASSES, create_dataloaders, create_synthetic_weather_dataset
 from src.models import build_model
-from src.train import Trainer, train_model
+from src.train import Trainer
 
 
 @pytest.fixture(scope="module")

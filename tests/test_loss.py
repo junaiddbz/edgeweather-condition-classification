@@ -5,7 +5,6 @@ Unit tests for LabelSmoothingCrossEntropy and ConfusionAwareLoss.
 """
 
 import numpy as np
-import pytest
 import torch
 
 from src.loss import (
